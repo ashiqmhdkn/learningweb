@@ -1,6 +1,9 @@
+globalThis.__VINEXT_LAZY_CHUNKS__ = ["assets/query-BbOc3VB2.js","assets/router-C5uqvVNo.js","assets/worker-entry-D3rhbIQ5.js"];
 import * as __viteRscAsyncHooks from "node:async_hooks";
 import { AsyncLocalStorage as AsyncLocalStorage$1 } from "node:async_hooks";
 import assetsManifest from "./__vite_rsc_assets_manifest.js";
+import "node:fs";
+import "node:path";
 //#region \0rolldown/runtime.js
 var __create = Object.create;
 var __defProp = Object.defineProperty;
@@ -32,6 +35,404 @@ var __toESM = (mod, isNodeMode, target) => (target = mod != null ? __create(__ge
 	value: mod,
 	enumerable: true
 }) : target, mod));
+//#endregion
+//#region node_modules/vinext/dist/server/image-optimization.js
+/**
+* Next.js default device sizes and image sizes.
+* These are the allowed widths for image optimization when no custom
+* config is provided. Matches Next.js defaults exactly.
+*/
+var DEFAULT_DEVICE_SIZES = [
+	640,
+	750,
+	828,
+	1080,
+	1200,
+	1920,
+	2048,
+	3840
+];
+var DEFAULT_IMAGE_SIZES = [
+	16,
+	32,
+	48,
+	64,
+	96,
+	128,
+	256,
+	384
+];
+/**
+* Absolute maximum image width. Even if custom deviceSizes/imageSizes are
+* configured, widths above this are always rejected. This prevents resource
+* exhaustion from absurdly large resize requests.
+*/
+var ABSOLUTE_MAX_WIDTH = 3840;
+/**
+* Parse and validate image optimization query parameters.
+* Returns null if the request is malformed.
+*
+* When `allowedWidths` is provided, the width must be 0 (no resize) or
+* exactly match one of the allowed values. This matches Next.js behavior
+* where only configured deviceSizes and imageSizes are accepted.
+*
+* When `allowedWidths` is not provided, any width from 0 to ABSOLUTE_MAX_WIDTH
+* is accepted (backwards-compatible fallback).
+*/
+function parseImageParams(url, allowedWidths) {
+	const imageUrl = url.searchParams.get("url");
+	if (!imageUrl) return null;
+	const w = parseInt(url.searchParams.get("w") || "0", 10);
+	const q = parseInt(url.searchParams.get("q") || "75", 10);
+	if (Number.isNaN(w) || w < 0) return null;
+	if (w > ABSOLUTE_MAX_WIDTH) return null;
+	if (allowedWidths && w !== 0 && !allowedWidths.includes(w)) return null;
+	if (Number.isNaN(q) || q < 1 || q > 100) return null;
+	const normalizedUrl = imageUrl.replaceAll("\\", "/");
+	if (!normalizedUrl.startsWith("/") || normalizedUrl.startsWith("//")) return null;
+	try {
+		const base = "https://localhost";
+		if (new URL(normalizedUrl, base).origin !== base) return null;
+	} catch {
+		return null;
+	}
+	return {
+		imageUrl: normalizedUrl,
+		width: w,
+		quality: q
+	};
+}
+/**
+* Negotiate the best output format based on the Accept header.
+* Returns an IANA media type.
+*/
+function negotiateImageFormat(acceptHeader) {
+	if (!acceptHeader) return "image/jpeg";
+	if (acceptHeader.includes("image/avif")) return "image/avif";
+	if (acceptHeader.includes("image/webp")) return "image/webp";
+	return "image/jpeg";
+}
+/**
+* Standard Cache-Control header for optimized images.
+* Optimized images are immutable because the URL encodes the transform params.
+*/
+var IMAGE_CACHE_CONTROL = "public, max-age=31536000, immutable";
+/**
+* Allowlist of Content-Types that are safe to serve from the image endpoint.
+* SVG is intentionally excluded — it can contain embedded JavaScript and is
+* essentially an XML document, not a safe raster image format.
+*/
+var SAFE_IMAGE_CONTENT_TYPES = new Set([
+	"image/jpeg",
+	"image/png",
+	"image/gif",
+	"image/webp",
+	"image/avif",
+	"image/x-icon",
+	"image/vnd.microsoft.icon",
+	"image/bmp",
+	"image/tiff"
+]);
+/**
+* Check if a Content-Type header value is a safe image type.
+* Returns false for SVG (unless dangerouslyAllowSVG is true), HTML, or any non-image type.
+*/
+function isSafeImageContentType(contentType, dangerouslyAllowSVG = false) {
+	if (!contentType) return false;
+	const mediaType = contentType.split(";")[0].trim().toLowerCase();
+	if (SAFE_IMAGE_CONTENT_TYPES.has(mediaType)) return true;
+	if (dangerouslyAllowSVG && mediaType === "image/svg+xml") return true;
+	return false;
+}
+/**
+* Apply security headers to an image optimization response.
+* These headers are set on every response from the image endpoint,
+* regardless of whether the image was transformed or served as-is.
+* When an ImageConfig is provided, uses its values for CSP and Content-Disposition.
+*/
+function setImageSecurityHeaders(headers, config) {
+	headers.set("Content-Security-Policy", config?.contentSecurityPolicy ?? "script-src 'none'; frame-src 'none'; sandbox;");
+	headers.set("X-Content-Type-Options", "nosniff");
+	headers.set("Content-Disposition", config?.contentDispositionType === "attachment" ? "attachment" : "inline");
+}
+function createPassthroughImageResponse(source, config) {
+	const headers = new Headers(source.headers);
+	headers.set("Cache-Control", IMAGE_CACHE_CONTROL);
+	headers.set("Vary", "Accept");
+	setImageSecurityHeaders(headers, config);
+	return new Response(source.body, {
+		status: 200,
+		headers
+	});
+}
+/**
+* Handle image optimization requests.
+*
+* Parses and validates the request, fetches the source image via the provided
+* handlers, optionally transforms it, and returns the response with appropriate
+* cache headers.
+*/
+async function handleImageOptimization(request, handlers, allowedWidths, imageConfig) {
+	const params = parseImageParams(new URL(request.url), allowedWidths);
+	if (!params) return new Response("Bad Request", { status: 400 });
+	const { imageUrl, width, quality } = params;
+	const source = await handlers.fetchAsset(imageUrl, request);
+	if (!source.ok || !source.body) return new Response("Image not found", { status: 404 });
+	const format = negotiateImageFormat(request.headers.get("Accept"));
+	const sourceContentType = source.headers.get("Content-Type");
+	if (!isSafeImageContentType(sourceContentType, imageConfig?.dangerouslyAllowSVG)) return new Response("The requested resource is not an allowed image type", { status: 400 });
+	if (sourceContentType?.split(";")[0].trim().toLowerCase() === "image/svg+xml") return createPassthroughImageResponse(source, imageConfig);
+	if (handlers.transformImage) try {
+		const transformed = await handlers.transformImage(source.body, {
+			width,
+			format,
+			quality
+		});
+		const headers = new Headers(transformed.headers);
+		headers.set("Cache-Control", IMAGE_CACHE_CONTROL);
+		headers.set("Vary", "Accept");
+		setImageSecurityHeaders(headers, imageConfig);
+		if (!isSafeImageContentType(headers.get("Content-Type"), imageConfig?.dangerouslyAllowSVG)) headers.set("Content-Type", format);
+		return new Response(transformed.body, {
+			status: 200,
+			headers
+		});
+	} catch (e) {
+		console.error("[vinext] Image optimization error:", e);
+	}
+	try {
+		return createPassthroughImageResponse(source, imageConfig);
+	} catch (e) {
+		console.error("[vinext] Image fallback error, refetching source image:", e);
+		const refetchedSource = await handlers.fetchAsset(imageUrl, request);
+		if (!refetchedSource.ok || !refetchedSource.body) return new Response("Image not found", { status: 404 });
+		if (!isSafeImageContentType(refetchedSource.headers.get("Content-Type"), imageConfig?.dangerouslyAllowSVG)) return new Response("The requested resource is not an allowed image type", { status: 400 });
+		return createPassthroughImageResponse(refetchedSource, imageConfig);
+	}
+}
+//#endregion
+//#region node_modules/vinext/dist/shims/unified-request-context.js
+/**
+* Unified per-request context backed by a single AsyncLocalStorage.
+*
+* Consolidates the 5–6 nested ALS scopes that previously wrapped every
+* App Router request (headers, navigation, cache-state, private-cache,
+* fetch-cache, execution-context) into one flat store.
+*
+* Each shim module checks `isInsideUnifiedScope()` and reads its sub-fields
+* from the unified store, falling back to its own standalone ALS when
+* outside (SSR environment, Pages Router, tests).
+*/
+var _ALS_KEY$5 = Symbol.for("vinext.unifiedRequestContext.als");
+var _REQUEST_CONTEXT_ALS_KEY = Symbol.for("vinext.requestContext.als");
+var _g$7 = globalThis;
+var _als$4 = _g$7[_ALS_KEY$5] ??= new AsyncLocalStorage$1();
+function _getInheritedExecutionContext() {
+	const unifiedStore = _als$4.getStore();
+	if (unifiedStore) return unifiedStore.executionContext;
+	return _g$7[_REQUEST_CONTEXT_ALS_KEY]?.getStore() ?? null;
+}
+/**
+* Create a fresh `UnifiedRequestContext` with defaults for all fields.
+* Pass partial overrides for the fields you need to pre-populate.
+*/
+function createRequestContext(opts) {
+	return {
+		headersContext: null,
+		dynamicUsageDetected: false,
+		pendingSetCookies: [],
+		draftModeCookieHeader: null,
+		phase: "render",
+		i18nContext: null,
+		serverContext: null,
+		serverInsertedHTMLCallbacks: [],
+		requestScopedCacheLife: null,
+		_privateCache: null,
+		currentRequestTags: [],
+		executionContext: _getInheritedExecutionContext(),
+		requestCache: /* @__PURE__ */ new WeakMap(),
+		ssrContext: null,
+		ssrHeadChildren: [],
+		...opts
+	};
+}
+function runWithRequestContext(ctx, fn) {
+	return _als$4.run(ctx, fn);
+}
+function runWithUnifiedStateMutation(mutate, fn) {
+	const parentCtx = _als$4.getStore();
+	if (!parentCtx) return fn();
+	const childCtx = { ...parentCtx };
+	mutate(childCtx);
+	return _als$4.run(childCtx, fn);
+}
+/**
+* Get the current unified request context.
+* Returns the ALS store when inside a `runWithRequestContext()` scope,
+* or a fresh detached context otherwise. Unlike the legacy per-shim fallback
+* singletons, this detached value is ephemeral — mutations do not persist
+* across calls. This is intentional to prevent state leakage outside request
+* scopes.
+*
+* Only direct callers observe this detached fallback. Shim `_getState()`
+* helpers should continue to gate on `isInsideUnifiedScope()` and fall back
+* to their standalone ALS/fallback singletons outside the unified scope.
+* If called inside a standalone `runWithExecutionContext()` scope, the
+* detached context still reflects that inherited `executionContext`.
+*/
+function getRequestContext() {
+	return _als$4.getStore() ?? createRequestContext();
+}
+/**
+* Check whether the current execution is inside a `runWithRequestContext()` scope.
+* Shim modules use this to decide whether to read from the unified store
+* or fall back to their own standalone ALS.
+*/
+function isInsideUnifiedScope() {
+	return _als$4.getStore() != null;
+}
+//#endregion
+//#region node_modules/vinext/dist/shims/request-context.js
+/**
+* Request ExecutionContext — AsyncLocalStorage-backed accessor.
+*
+* Makes the Cloudflare Workers `ExecutionContext` (which provides
+* `waitUntil`) available to any code on the call stack during a request
+* without requiring it to be threaded through every function signature.
+*
+* Usage:
+*
+*   // In the worker entry, wrap the handler:
+*   import { runWithExecutionContext } from "vinext/shims/request-context";
+*   export default {
+*     fetch(request, env, ctx) {
+*       return runWithExecutionContext(ctx, () => handler.fetch(request, env, ctx));
+*     }
+*   };
+*
+*   // Anywhere downstream:
+*   import { getRequestExecutionContext } from "vinext/shims/request-context";
+*   const ctx = getRequestExecutionContext(); // null on Node.js dev
+*   ctx?.waitUntil(somePromise);
+*/
+var _ALS_KEY$4 = Symbol.for("vinext.requestContext.als");
+var _g$6 = globalThis;
+var _als$3 = _g$6[_ALS_KEY$4] ??= new AsyncLocalStorage$1();
+function runWithExecutionContext(ctx, fn) {
+	if (isInsideUnifiedScope()) return runWithUnifiedStateMutation((uCtx) => {
+		uCtx.executionContext = ctx;
+	}, fn);
+	return _als$3.run(ctx, fn);
+}
+/**
+* Get the `ExecutionContext` for the current request, or `null` when called
+* outside a `runWithExecutionContext()` scope (e.g. on Node.js dev server).
+*
+* Use `ctx?.waitUntil(promise)` to schedule background work that must
+* complete before the Worker isolate is torn down.
+*/
+function getRequestExecutionContext() {
+	if (isInsideUnifiedScope()) return getRequestContext().executionContext;
+	return _als$3.getStore() ?? null;
+}
+//#endregion
+//#region node_modules/vinext/dist/server/worker-utils.js
+/**
+* Shared utilities for Cloudflare Worker entries.
+*
+* Used by hand-written example worker entries and can be imported as
+* "vinext/server/worker-utils". The generated worker entry (deploy.ts)
+* inlines these functions in its template string.
+*/
+/**
+* Merge middleware/config headers into a response.
+* Response headers take precedence over middleware headers for all headers
+* except Set-Cookie, which is additive (both middleware and response cookies
+* are preserved). Uses getSetCookie() to preserve multiple Set-Cookie values.
+* Keep this in sync with prod-server.ts and the generated copy in deploy.ts.
+*/
+var NO_BODY_RESPONSE_STATUSES = new Set([
+	204,
+	205,
+	304
+]);
+function isVinextStreamedHtmlResponse(response) {
+	return response.__vinextStreamedHtmlResponse === true;
+}
+function isContentLengthHeader(name) {
+	return name.toLowerCase() === "content-length";
+}
+function cancelResponseBody(response) {
+	const body = response.body;
+	if (!body || body.locked) return;
+	body.cancel().catch(() => {});
+}
+function buildHeaderRecord(response, omitNames = []) {
+	const omitted = new Set(omitNames.map((name) => name.toLowerCase()));
+	const headers = {};
+	response.headers.forEach((value, key) => {
+		if (omitted.has(key.toLowerCase()) || key === "set-cookie") return;
+		headers[key] = value;
+	});
+	const cookies = response.headers.getSetCookie?.() ?? [];
+	if (cookies.length > 0) headers["set-cookie"] = cookies;
+	return headers;
+}
+function mergeHeaders(response, extraHeaders, statusOverride) {
+	const status = statusOverride ?? response.status;
+	const merged = new Headers();
+	for (const [k, v] of Object.entries(extraHeaders)) {
+		if (isContentLengthHeader(k)) continue;
+		if (Array.isArray(v)) for (const item of v) merged.append(k, item);
+		else merged.set(k, v);
+	}
+	response.headers.forEach((v, k) => {
+		if (k === "set-cookie") return;
+		merged.set(k, v);
+	});
+	const responseCookies = response.headers.getSetCookie?.() ?? [];
+	for (const cookie of responseCookies) merged.append("set-cookie", cookie);
+	const shouldDropBody = NO_BODY_RESPONSE_STATUSES.has(status);
+	const shouldStripStreamLength = isVinextStreamedHtmlResponse(response) && merged.has("content-length");
+	if (!Object.keys(extraHeaders).some((key) => !isContentLengthHeader(key)) && statusOverride === void 0 && !shouldDropBody && !shouldStripStreamLength) return response;
+	if (shouldDropBody) {
+		cancelResponseBody(response);
+		merged.delete("content-encoding");
+		merged.delete("content-length");
+		merged.delete("content-type");
+		merged.delete("transfer-encoding");
+		return new Response(null, {
+			status,
+			statusText: status === response.status ? response.statusText : void 0,
+			headers: merged
+		});
+	}
+	if (shouldStripStreamLength) merged.delete("content-length");
+	return new Response(response.body, {
+		status,
+		statusText: status === response.status ? response.statusText : void 0,
+		headers: merged
+	});
+}
+async function resolveStaticAssetSignal(signalResponse, options) {
+	const signal = signalResponse.headers.get("x-vinext-static-file");
+	if (!signal) return null;
+	let assetPath = "/";
+	try {
+		assetPath = decodeURIComponent(signal);
+	} catch {
+		assetPath = signal;
+	}
+	const extraHeaders = buildHeaderRecord(signalResponse, [
+		"x-vinext-static-file",
+		"content-encoding",
+		"content-length",
+		"content-type"
+	]);
+	cancelResponseBody(signalResponse);
+	const assetResponse = await options.fetchAsset(assetPath);
+	return mergeHeaders(assetResponse, extraHeaders, assetResponse.ok && signalResponse.status !== 200 ? signalResponse.status : void 0);
+}
 //#endregion
 //#region node_modules/@vitejs/plugin-rsc/dist/dist-rz-Bnebz.js
 function tinyassert(value, message) {
@@ -3109,80 +3510,6 @@ function buildClientHookErrorMessage(hookName) {
 	return `${hookName} only works in Client Components. Add the "use client" directive at the top of the file to use it. Read more: https://nextjs.org/docs/messages/react-client-hook-in-server-component`;
 }
 //#endregion
-//#region node_modules/vinext/dist/shims/unified-request-context.js
-/**
-* Unified per-request context backed by a single AsyncLocalStorage.
-*
-* Consolidates the 5–6 nested ALS scopes that previously wrapped every
-* App Router request (headers, navigation, cache-state, private-cache,
-* fetch-cache, execution-context) into one flat store.
-*
-* Each shim module checks `isInsideUnifiedScope()` and reads its sub-fields
-* from the unified store, falling back to its own standalone ALS when
-* outside (SSR environment, Pages Router, tests).
-*/
-var _ALS_KEY$5 = Symbol.for("vinext.unifiedRequestContext.als");
-var _REQUEST_CONTEXT_ALS_KEY = Symbol.for("vinext.requestContext.als");
-var _g$7 = globalThis;
-var _als$4 = _g$7[_ALS_KEY$5] ??= new AsyncLocalStorage$1();
-function _getInheritedExecutionContext() {
-	const unifiedStore = _als$4.getStore();
-	if (unifiedStore) return unifiedStore.executionContext;
-	return _g$7[_REQUEST_CONTEXT_ALS_KEY]?.getStore() ?? null;
-}
-/**
-* Create a fresh `UnifiedRequestContext` with defaults for all fields.
-* Pass partial overrides for the fields you need to pre-populate.
-*/
-function createRequestContext(opts) {
-	return {
-		headersContext: null,
-		dynamicUsageDetected: false,
-		pendingSetCookies: [],
-		draftModeCookieHeader: null,
-		phase: "render",
-		i18nContext: null,
-		serverContext: null,
-		serverInsertedHTMLCallbacks: [],
-		requestScopedCacheLife: null,
-		_privateCache: null,
-		currentRequestTags: [],
-		executionContext: _getInheritedExecutionContext(),
-		requestCache: /* @__PURE__ */ new WeakMap(),
-		ssrContext: null,
-		ssrHeadChildren: [],
-		...opts
-	};
-}
-function runWithRequestContext(ctx, fn) {
-	return _als$4.run(ctx, fn);
-}
-/**
-* Get the current unified request context.
-* Returns the ALS store when inside a `runWithRequestContext()` scope,
-* or a fresh detached context otherwise. Unlike the legacy per-shim fallback
-* singletons, this detached value is ephemeral — mutations do not persist
-* across calls. This is intentional to prevent state leakage outside request
-* scopes.
-*
-* Only direct callers observe this detached fallback. Shim `_getState()`
-* helpers should continue to gate on `isInsideUnifiedScope()` and fall back
-* to their standalone ALS/fallback singletons outside the unified scope.
-* If called inside a standalone `runWithExecutionContext()` scope, the
-* detached context still reflects that inherited `executionContext`.
-*/
-function getRequestContext() {
-	return _als$4.getStore() ?? createRequestContext();
-}
-/**
-* Check whether the current execution is inside a `runWithRequestContext()` scope.
-* Shim modules use this to decide whether to read from the unified store
-* or fall back to their own standalone ALS.
-*/
-function isInsideUnifiedScope() {
-	return _als$4.getStore() != null;
-}
-//#endregion
 //#region node_modules/vinext/dist/server/middleware-request-headers.js
 var MIDDLEWARE_REQUEST_HEADER_PREFIX = "x-middleware-request-";
 var MIDDLEWARE_OVERRIDE_HEADERS = "x-middleware-override-headers";
@@ -3275,11 +3602,11 @@ function parseCookieHeader(cookieHeader) {
 * In Next.js 15+, cookies() and headers() return Promises (async).
 * We support both the sync (legacy) and async patterns.
 */
-var _ALS_KEY$4 = Symbol.for("vinext.nextHeadersShim.als");
+var _ALS_KEY$3 = Symbol.for("vinext.nextHeadersShim.als");
 var _FALLBACK_KEY$3 = Symbol.for("vinext.nextHeadersShim.fallback");
-var _g$6 = globalThis;
-var _als$3 = _g$6[_ALS_KEY$4] ??= new AsyncLocalStorage$1();
-var _fallbackState$2 = _g$6[_FALLBACK_KEY$3] ??= {
+var _g$5 = globalThis;
+var _als$2 = _g$5[_ALS_KEY$3] ??= new AsyncLocalStorage$1();
+var _fallbackState$2 = _g$5[_FALLBACK_KEY$3] ??= {
 	headersContext: null,
 	dynamicUsageDetected: false,
 	pendingSetCookies: [],
@@ -3289,7 +3616,7 @@ var _fallbackState$2 = _g$6[_FALLBACK_KEY$3] ??= {
 (/* @__PURE__ */ new Date(0)).toUTCString();
 function _getState$2() {
 	if (isInsideUnifiedScope()) return getRequestContext();
-	return _als$3.getStore() ?? _fallbackState$2;
+	return _als$2.getStore() ?? _fallbackState$2;
 }
 /**
 * Dynamic usage flag — set when a component calls connection(), cookies(),
@@ -3422,44 +3749,6 @@ function getDraftModeCookieHeader() {
 	const header = state.draftModeCookieHeader;
 	state.draftModeCookieHeader = null;
 	return header;
-}
-//#endregion
-//#region node_modules/vinext/dist/shims/request-context.js
-/**
-* Request ExecutionContext — AsyncLocalStorage-backed accessor.
-*
-* Makes the Cloudflare Workers `ExecutionContext` (which provides
-* `waitUntil`) available to any code on the call stack during a request
-* without requiring it to be threaded through every function signature.
-*
-* Usage:
-*
-*   // In the worker entry, wrap the handler:
-*   import { runWithExecutionContext } from "vinext/shims/request-context";
-*   export default {
-*     fetch(request, env, ctx) {
-*       return runWithExecutionContext(ctx, () => handler.fetch(request, env, ctx));
-*     }
-*   };
-*
-*   // Anywhere downstream:
-*   import { getRequestExecutionContext } from "vinext/shims/request-context";
-*   const ctx = getRequestExecutionContext(); // null on Node.js dev
-*   ctx?.waitUntil(somePromise);
-*/
-var _ALS_KEY$3 = Symbol.for("vinext.requestContext.als");
-var _g$5 = globalThis;
-var _als$2 = _g$5[_ALS_KEY$3] ??= new AsyncLocalStorage$1();
-/**
-* Get the `ExecutionContext` for the current request, or `null` when called
-* outside a `runWithExecutionContext()` scope (e.g. on Node.js dev server).
-*
-* Use `ctx?.waitUntil(promise)` to schedule background work that must
-* complete before the Worker isolate is torn down.
-*/
-function getRequestExecutionContext() {
-	if (isInsideUnifiedScope()) return getRequestContext().executionContext;
-	return _als$2.getStore() ?? null;
 }
 //#endregion
 //#region node_modules/vinext/dist/shims/server.js
@@ -3754,7 +4043,7 @@ var NextURL = class NextURL {
 	* Matches the Next.js API: `request.nextUrl.buildId`.
 	*/
 	get buildId() {
-		return "87b72774-42e6-4ba2-859d-89fac1291495";
+		return "ca00bf5d-88a4-4eea-a15e-630548dd7d49";
 	}
 };
 var RequestCookies = class {
@@ -8496,11 +8785,11 @@ function getSSRFontPreloads() {
 	return [...ssrFontPreloads];
 }
 //#endregion
-//#region app/courses/[courseId]/units/[unitId]/page.tsx
-var page_exports$6 = /* @__PURE__ */ __exportAll({ default: () => page_default$6 });
-var page_default$6 = /* @__PURE__ */ registerClientReference(() => {
+//#region app/page.tsx
+var page_exports$7 = /* @__PURE__ */ __exportAll({ default: () => page_default$7 });
+var page_default$7 = /* @__PURE__ */ registerClientReference(() => {
 	throw new Error("Unexpectedly client reference export 'default' is called on server");
-}, "861a7b013abd", "default");
+}, "6efdf509a785", "default");
 var Resources = ((React, deps, RemoveDuplicateServerCss, precedence) => {
 	return function Resources() {
 		return React.createElement(React.Fragment, null, [...deps.css.map((href) => React.createElement("link", {
@@ -8544,6 +8833,7 @@ var metadata = {
 function RootLayout({ children }) {
 	return /* @__PURE__ */ (0, import_jsx_runtime_react_server.jsx)("html", {
 		lang: "en",
+		"data-scroll-behavior": "smooth",
 		className: `${playfair.variable} ${dmSans.variable}`,
 		children: /* @__PURE__ */ (0, import_jsx_runtime_react_server.jsx)("body", {
 			className: "bg-ink text-white font-body antialiased",
@@ -8560,12 +8850,6 @@ function __vite_rsc_wrap_css__(value, name) {
 	Object.defineProperty(__wrapper, "name", { value: name });
 	return __wrapper;
 }
-//#endregion
-//#region app/page.tsx
-var page_exports$5 = /* @__PURE__ */ __exportAll({ default: () => page_default$5 });
-var page_default$5 = /* @__PURE__ */ registerClientReference(() => {
-	throw new Error("Unexpectedly client reference export 'default' is called on server");
-}, "6efdf509a785", "default");
 //#endregion
 //#region app/api/login/route.ts
 var route_exports$1 = /* @__PURE__ */ __exportAll({ POST: () => POST });
@@ -8600,34 +8884,46 @@ async function GET(req) {
 }
 //#endregion
 //#region app/courses/page.tsx
-var page_exports$4 = /* @__PURE__ */ __exportAll({ default: () => page_default$4 });
-var page_default$4 = /* @__PURE__ */ registerClientReference(() => {
+var page_exports$6 = /* @__PURE__ */ __exportAll({ default: () => page_default$6 });
+var page_default$6 = /* @__PURE__ */ registerClientReference(() => {
 	throw new Error("Unexpectedly client reference export 'default' is called on server");
 }, "c237b91ab318", "default");
 //#endregion
 //#region app/dashboard/page.tsx
-var page_exports$3 = /* @__PURE__ */ __exportAll({ default: () => page_default$3 });
-var page_default$3 = /* @__PURE__ */ registerClientReference(() => {
+var page_exports$5 = /* @__PURE__ */ __exportAll({ default: () => page_default$5 });
+var page_default$5 = /* @__PURE__ */ registerClientReference(() => {
 	throw new Error("Unexpectedly client reference export 'default' is called on server");
 }, "e16c1c1133d5", "default");
 //#endregion
 //#region app/login/page.tsx
-var page_exports$2 = /* @__PURE__ */ __exportAll({ default: () => page_default$2 });
-var page_default$2 = /* @__PURE__ */ registerClientReference(() => {
+var page_exports$4 = /* @__PURE__ */ __exportAll({ default: () => page_default$4 });
+var page_default$4 = /* @__PURE__ */ registerClientReference(() => {
 	throw new Error("Unexpectedly client reference export 'default' is called on server");
 }, "b49ea5cf04c0", "default");
 //#endregion
 //#region app/profile/page.tsx
-var page_exports$1 = /* @__PURE__ */ __exportAll({ default: () => page_default$1 });
-var page_default$1 = /* @__PURE__ */ registerClientReference(() => {
+var page_exports$3 = /* @__PURE__ */ __exportAll({ default: () => page_default$3 });
+var page_default$3 = /* @__PURE__ */ registerClientReference(() => {
 	throw new Error("Unexpectedly client reference export 'default' is called on server");
 }, "b5f72a92d407", "default");
 //#endregion
 //#region app/courses/[courseId]/page.tsx
+var page_exports$2 = /* @__PURE__ */ __exportAll({ default: () => page_default$2 });
+var page_default$2 = /* @__PURE__ */ registerClientReference(() => {
+	throw new Error("Unexpectedly client reference export 'default' is called on server");
+}, "061b9fa1e40a", "default");
+//#endregion
+//#region app/subjects/[subjectId]/page.tsx
+var page_exports$1 = /* @__PURE__ */ __exportAll({ default: () => page_default$1 });
+var page_default$1 = /* @__PURE__ */ registerClientReference(() => {
+	throw new Error("Unexpectedly client reference export 'default' is called on server");
+}, "fd66447d98ef", "default");
+//#endregion
+//#region app/units/[unitId]/page.tsx
 var page_exports = /* @__PURE__ */ __exportAll({ default: () => page_default });
 var page_default = /* @__PURE__ */ registerClientReference(() => {
 	throw new Error("Unexpectedly client reference export 'default' is called on server");
-}, "061b9fa1e40a", "default");
+}, "a92b8f6cff96", "default");
 //#endregion
 //#region \0virtual:vinext-rsc-entry
 function renderToReadableStream(model, options) {
@@ -8720,7 +9016,7 @@ function __isrFnv1a64(s) {
 }
 function __isrCacheKey(pathname, suffix) {
 	const normalized = pathname === "/" ? "/" : pathname.replace(/\/$/, "");
-	const prefix = "app:87b72774-42e6-4ba2-859d-89fac1291495";
+	const prefix = "app:ca00bf5d-88a4-4eea-a15e-630548dd7d49";
 	const key = prefix + ":" + normalized + ":" + suffix;
 	if (key.length <= 200) return key;
 	return prefix + ":__hash:" + __isrFnv1a64(normalized) + ":" + suffix;
@@ -8792,44 +9088,11 @@ var routes = [
 	{
 		__buildTimeClassifications: __VINEXT_CLASS(0),
 		__buildTimeReasons: __classDebug ? __VINEXT_CLASS_REASONS(0) : null,
-		pattern: "/courses/:courseId/units/:unitId",
-		patternParts: [
-			"courses",
-			":courseId",
-			"units",
-			":unitId"
-		],
-		isDynamic: true,
-		params: ["courseId", "unitId"],
-		page: page_exports$6,
-		routeHandler: null,
-		layouts: [layout_exports],
-		routeSegments: [
-			"courses",
-			"[courseId]",
-			"units",
-			"[unitId]"
-		],
-		templateTreePositions: [],
-		layoutTreePositions: [0],
-		templates: [],
-		errors: [null],
-		slots: {},
-		loading: null,
-		error: null,
-		notFound: null,
-		notFounds: [null],
-		forbidden: null,
-		unauthorized: null
-	},
-	{
-		__buildTimeClassifications: __VINEXT_CLASS(1),
-		__buildTimeReasons: __classDebug ? __VINEXT_CLASS_REASONS(1) : null,
 		pattern: "/",
 		patternParts: [],
 		isDynamic: false,
 		params: [],
-		page: page_exports$5,
+		page: page_exports$7,
 		routeHandler: null,
 		layouts: [layout_exports],
 		routeSegments: [],
@@ -8846,8 +9109,8 @@ var routes = [
 		unauthorized: null
 	},
 	{
-		__buildTimeClassifications: __VINEXT_CLASS(2),
-		__buildTimeReasons: __classDebug ? __VINEXT_CLASS_REASONS(2) : null,
+		__buildTimeClassifications: __VINEXT_CLASS(1),
+		__buildTimeReasons: __classDebug ? __VINEXT_CLASS_REASONS(1) : null,
 		pattern: "/api/login",
 		patternParts: ["api", "login"],
 		isDynamic: false,
@@ -8869,8 +9132,8 @@ var routes = [
 		unauthorized: null
 	},
 	{
-		__buildTimeClassifications: __VINEXT_CLASS(3),
-		__buildTimeReasons: __classDebug ? __VINEXT_CLASS_REASONS(3) : null,
+		__buildTimeClassifications: __VINEXT_CLASS(2),
+		__buildTimeReasons: __classDebug ? __VINEXT_CLASS_REASONS(2) : null,
 		pattern: "/api/profile",
 		patternParts: ["api", "profile"],
 		isDynamic: false,
@@ -8892,13 +9155,13 @@ var routes = [
 		unauthorized: null
 	},
 	{
-		__buildTimeClassifications: __VINEXT_CLASS(4),
-		__buildTimeReasons: __classDebug ? __VINEXT_CLASS_REASONS(4) : null,
+		__buildTimeClassifications: __VINEXT_CLASS(3),
+		__buildTimeReasons: __classDebug ? __VINEXT_CLASS_REASONS(3) : null,
 		pattern: "/courses",
 		patternParts: ["courses"],
 		isDynamic: false,
 		params: [],
-		page: page_exports$4,
+		page: page_exports$6,
 		routeHandler: null,
 		layouts: [layout_exports],
 		routeSegments: ["courses"],
@@ -8915,13 +9178,13 @@ var routes = [
 		unauthorized: null
 	},
 	{
-		__buildTimeClassifications: __VINEXT_CLASS(5),
-		__buildTimeReasons: __classDebug ? __VINEXT_CLASS_REASONS(5) : null,
+		__buildTimeClassifications: __VINEXT_CLASS(4),
+		__buildTimeReasons: __classDebug ? __VINEXT_CLASS_REASONS(4) : null,
 		pattern: "/dashboard",
 		patternParts: ["dashboard"],
 		isDynamic: false,
 		params: [],
-		page: page_exports$3,
+		page: page_exports$5,
 		routeHandler: null,
 		layouts: [layout_exports],
 		routeSegments: ["dashboard"],
@@ -8938,13 +9201,13 @@ var routes = [
 		unauthorized: null
 	},
 	{
-		__buildTimeClassifications: __VINEXT_CLASS(6),
-		__buildTimeReasons: __classDebug ? __VINEXT_CLASS_REASONS(6) : null,
+		__buildTimeClassifications: __VINEXT_CLASS(5),
+		__buildTimeReasons: __classDebug ? __VINEXT_CLASS_REASONS(5) : null,
 		pattern: "/login",
 		patternParts: ["login"],
 		isDynamic: false,
 		params: [],
-		page: page_exports$2,
+		page: page_exports$4,
 		routeHandler: null,
 		layouts: [layout_exports],
 		routeSegments: ["login"],
@@ -8961,13 +9224,13 @@ var routes = [
 		unauthorized: null
 	},
 	{
-		__buildTimeClassifications: __VINEXT_CLASS(7),
-		__buildTimeReasons: __classDebug ? __VINEXT_CLASS_REASONS(7) : null,
+		__buildTimeClassifications: __VINEXT_CLASS(6),
+		__buildTimeReasons: __classDebug ? __VINEXT_CLASS_REASONS(6) : null,
 		pattern: "/profile",
 		patternParts: ["profile"],
 		isDynamic: false,
 		params: [],
-		page: page_exports$1,
+		page: page_exports$3,
 		routeHandler: null,
 		layouts: [layout_exports],
 		routeSegments: ["profile"],
@@ -8984,16 +9247,62 @@ var routes = [
 		unauthorized: null
 	},
 	{
-		__buildTimeClassifications: __VINEXT_CLASS(8),
-		__buildTimeReasons: __classDebug ? __VINEXT_CLASS_REASONS(8) : null,
+		__buildTimeClassifications: __VINEXT_CLASS(7),
+		__buildTimeReasons: __classDebug ? __VINEXT_CLASS_REASONS(7) : null,
 		pattern: "/courses/:courseId",
 		patternParts: ["courses", ":courseId"],
 		isDynamic: true,
 		params: ["courseId"],
-		page: page_exports,
+		page: page_exports$2,
 		routeHandler: null,
 		layouts: [layout_exports],
 		routeSegments: ["courses", "[courseId]"],
+		templateTreePositions: [],
+		layoutTreePositions: [0],
+		templates: [],
+		errors: [null],
+		slots: {},
+		loading: null,
+		error: null,
+		notFound: null,
+		notFounds: [null],
+		forbidden: null,
+		unauthorized: null
+	},
+	{
+		__buildTimeClassifications: __VINEXT_CLASS(8),
+		__buildTimeReasons: __classDebug ? __VINEXT_CLASS_REASONS(8) : null,
+		pattern: "/subjects/:subjectId",
+		patternParts: ["subjects", ":subjectId"],
+		isDynamic: true,
+		params: ["subjectId"],
+		page: page_exports$1,
+		routeHandler: null,
+		layouts: [layout_exports],
+		routeSegments: ["subjects", "[subjectId]"],
+		templateTreePositions: [],
+		layoutTreePositions: [0],
+		templates: [],
+		errors: [null],
+		slots: {},
+		loading: null,
+		error: null,
+		notFound: null,
+		notFounds: [null],
+		forbidden: null,
+		unauthorized: null
+	},
+	{
+		__buildTimeClassifications: __VINEXT_CLASS(9),
+		__buildTimeReasons: __classDebug ? __VINEXT_CLASS_REASONS(9) : null,
+		pattern: "/units/:unitId",
+		patternParts: ["units", ":unitId"],
+		isDynamic: true,
+		params: ["unitId"],
+		page: page_exports,
+		routeHandler: null,
+		layouts: [layout_exports],
+		routeSegments: ["units", "[unitId]"],
 		templateTreePositions: [],
 		layoutTreePositions: [0],
 		templates: [],
@@ -9263,11 +9572,20 @@ var __i18nConfig = null;
 var __configRedirects = [];
 var __configRewrites = {
 	"beforeFiles": [],
-	"afterFiles": [],
+	"afterFiles": [{
+		"source": "/docs/:slug*",
+		"destination": "/docs/md/:slug*",
+		"has": [{
+			"type": "header",
+			"key": "accept",
+			"value": "(.*)text/markdown(.*)"
+		}]
+	}],
 	"fallback": []
 };
 var __configHeaders = [];
 var __publicFiles = new Set([
+	"/_headers",
 	"/file.svg",
 	"/globe.svg",
 	"/next.svg",
@@ -9392,8 +9710,9 @@ async function __readFormDataWithLimit(request, maxBytes) {
 	return new Response(combined, { headers: { "Content-Type": contentType } }).formData();
 }
 var generateStaticParamsMap = {
-	"/courses/:courseId/units/:unitId": null,
-	"/courses/:courseId": null
+	"/courses/:courseId": null,
+	"/subjects/:subjectId": null,
+	"/units/:unitId": null
 };
 async function handler(request, ctx) {
 	return runWithRequestContext(createRequestContext({
@@ -10199,4 +10518,47 @@ async function _handleRequest(request, __reqCtx, _mwCtx) {
 	});
 }
 //#endregion
-export { handler as default, generateStaticParamsMap };
+//#region node_modules/vinext/dist/server/app-router-entry.js
+/**
+* Default Cloudflare Worker entry point for vinext App Router.
+*
+* Use this directly in wrangler.jsonc:
+*   "main": "vinext/server/app-router-entry"
+*
+* Or import and delegate to it from a custom worker:
+*   import handler from "vinext/server/app-router-entry";
+*   return handler.fetch(request, env, ctx);
+*
+* This file runs in the RSC environment. Configure the Cloudflare plugin with:
+*   cloudflare({ viteEnvironment: { name: "rsc", childEnvironments: ["ssr"] } })
+*/
+var app_router_entry_default = { async fetch(request, env, ctx) {
+	if (new URL(request.url).pathname.replaceAll("\\", "/").startsWith("//")) return new Response("404 Not Found", { status: 404 });
+	const handleFn = () => handler(request, ctx);
+	const result = await (ctx ? runWithExecutionContext(ctx, handleFn) : handleFn());
+	if (result instanceof Response) {
+		if (env?.ASSETS) {
+			const assetResponse = await resolveStaticAssetSignal(result, { fetchAsset: (path) => Promise.resolve(env.ASSETS.fetch(new Request(new URL(path, request.url)))) });
+			if (assetResponse) return assetResponse;
+		}
+		return result;
+	}
+	if (result === null || result === void 0) return new Response("Not Found", { status: 404 });
+	return new Response(String(result), { status: 200 });
+} };
+//#endregion
+//#region \0virtual:cloudflare/worker-entry
+var worker_entry_default = { async fetch(request, env, ctx) {
+	if (new URL(request.url).pathname === "/_vinext/image") return handleImageOptimization(request, {
+		fetchAsset: (path) => env.ASSETS.fetch(new Request(new URL(path, request.url))),
+		transformImage: async (body, { width, format, quality }) => {
+			return (await env.IMAGES.input(body).transform(width > 0 ? { width } : {}).output({
+				format,
+				quality
+			})).response();
+		}
+	}, [...DEFAULT_DEVICE_SIZES, ...DEFAULT_IMAGE_SIZES]);
+	return app_router_entry_default.fetch(request, env, ctx);
+} };
+//#endregion
+export { worker_entry_default as default };

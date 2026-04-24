@@ -1,11 +1,11 @@
 export default {
-  "bootstrapScriptContent": "import(\"/assets/index-CkzVRFcV.js\")",
+  "bootstrapScriptContent": "import(\"/assets/index-0Whl7pQG.js\")",
   "clientReferenceDeps": {
     "fca983fe7b7c": {
       "js": [
-        "/assets/facade__virtual_vinext-rsc-entry-DUfRgabA.js",
+        "/assets/worker-entry-D3rhbIQ5.js",
         "/assets/rolldown-runtime-S-ySWqyJ.js",
-        "/assets/index-CkzVRFcV.js",
+        "/assets/index-0Whl7pQG.js",
         "/assets/preload-helper-3k_mjWfE.js",
         "/assets/framework-Bcj3CoQB.js",
         "/assets/query-BbOc3VB2.js"
@@ -14,20 +14,9 @@ export default {
     },
     "061b9fa1e40a": {
       "js": [
-        "/assets/facade__virtual_vinext-rsc-entry-DUfRgabA.js",
+        "/assets/worker-entry-D3rhbIQ5.js",
         "/assets/rolldown-runtime-S-ySWqyJ.js",
-        "/assets/index-CkzVRFcV.js",
-        "/assets/preload-helper-3k_mjWfE.js",
-        "/assets/framework-Bcj3CoQB.js",
-        "/assets/query-BbOc3VB2.js"
-      ],
-      "css": []
-    },
-    "861a7b013abd": {
-      "js": [
-        "/assets/facade__virtual_vinext-rsc-entry-DUfRgabA.js",
-        "/assets/rolldown-runtime-S-ySWqyJ.js",
-        "/assets/index-CkzVRFcV.js",
+        "/assets/index-0Whl7pQG.js",
         "/assets/preload-helper-3k_mjWfE.js",
         "/assets/framework-Bcj3CoQB.js",
         "/assets/query-BbOc3VB2.js"
@@ -36,9 +25,9 @@ export default {
     },
     "c237b91ab318": {
       "js": [
-        "/assets/facade__virtual_vinext-rsc-entry-DUfRgabA.js",
+        "/assets/worker-entry-D3rhbIQ5.js",
         "/assets/rolldown-runtime-S-ySWqyJ.js",
-        "/assets/index-CkzVRFcV.js",
+        "/assets/index-0Whl7pQG.js",
         "/assets/preload-helper-3k_mjWfE.js",
         "/assets/framework-Bcj3CoQB.js",
         "/assets/query-BbOc3VB2.js"
@@ -47,9 +36,9 @@ export default {
     },
     "e16c1c1133d5": {
       "js": [
-        "/assets/facade__virtual_vinext-rsc-entry-DUfRgabA.js",
+        "/assets/worker-entry-D3rhbIQ5.js",
         "/assets/rolldown-runtime-S-ySWqyJ.js",
-        "/assets/index-CkzVRFcV.js",
+        "/assets/index-0Whl7pQG.js",
         "/assets/preload-helper-3k_mjWfE.js",
         "/assets/framework-Bcj3CoQB.js",
         "/assets/query-BbOc3VB2.js"
@@ -58,9 +47,9 @@ export default {
     },
     "b49ea5cf04c0": {
       "js": [
-        "/assets/facade__virtual_vinext-rsc-entry-DUfRgabA.js",
+        "/assets/worker-entry-D3rhbIQ5.js",
         "/assets/rolldown-runtime-S-ySWqyJ.js",
-        "/assets/index-CkzVRFcV.js",
+        "/assets/index-0Whl7pQG.js",
         "/assets/preload-helper-3k_mjWfE.js",
         "/assets/framework-Bcj3CoQB.js",
         "/assets/query-BbOc3VB2.js"
@@ -69,9 +58,9 @@ export default {
     },
     "6efdf509a785": {
       "js": [
-        "/assets/facade__virtual_vinext-rsc-entry-DUfRgabA.js",
+        "/assets/worker-entry-D3rhbIQ5.js",
         "/assets/rolldown-runtime-S-ySWqyJ.js",
-        "/assets/index-CkzVRFcV.js",
+        "/assets/index-0Whl7pQG.js",
         "/assets/preload-helper-3k_mjWfE.js",
         "/assets/framework-Bcj3CoQB.js",
         "/assets/query-BbOc3VB2.js"
@@ -80,9 +69,31 @@ export default {
     },
     "b5f72a92d407": {
       "js": [
-        "/assets/facade__virtual_vinext-rsc-entry-DUfRgabA.js",
+        "/assets/worker-entry-D3rhbIQ5.js",
         "/assets/rolldown-runtime-S-ySWqyJ.js",
-        "/assets/index-CkzVRFcV.js",
+        "/assets/index-0Whl7pQG.js",
+        "/assets/preload-helper-3k_mjWfE.js",
+        "/assets/framework-Bcj3CoQB.js",
+        "/assets/query-BbOc3VB2.js"
+      ],
+      "css": []
+    },
+    "fd66447d98ef": {
+      "js": [
+        "/assets/worker-entry-D3rhbIQ5.js",
+        "/assets/rolldown-runtime-S-ySWqyJ.js",
+        "/assets/index-0Whl7pQG.js",
+        "/assets/preload-helper-3k_mjWfE.js",
+        "/assets/framework-Bcj3CoQB.js",
+        "/assets/query-BbOc3VB2.js"
+      ],
+      "css": []
+    },
+    "a92b8f6cff96": {
+      "js": [
+        "/assets/worker-entry-D3rhbIQ5.js",
+        "/assets/rolldown-runtime-S-ySWqyJ.js",
+        "/assets/index-0Whl7pQG.js",
         "/assets/preload-helper-3k_mjWfE.js",
         "/assets/framework-Bcj3CoQB.js",
         "/assets/query-BbOc3VB2.js"
@@ -91,9 +102,9 @@ export default {
     },
     "593f344dc510": {
       "js": [
-        "/assets/facade__virtual_vinext-rsc-entry-DUfRgabA.js",
+        "/assets/worker-entry-D3rhbIQ5.js",
         "/assets/rolldown-runtime-S-ySWqyJ.js",
-        "/assets/index-CkzVRFcV.js",
+        "/assets/index-0Whl7pQG.js",
         "/assets/preload-helper-3k_mjWfE.js",
         "/assets/framework-Bcj3CoQB.js",
         "/assets/query-BbOc3VB2.js"
@@ -102,9 +113,9 @@ export default {
     },
     "15c18cfaeeff": {
       "js": [
-        "/assets/facade__virtual_vinext-rsc-entry-DUfRgabA.js",
+        "/assets/worker-entry-D3rhbIQ5.js",
         "/assets/rolldown-runtime-S-ySWqyJ.js",
-        "/assets/index-CkzVRFcV.js",
+        "/assets/index-0Whl7pQG.js",
         "/assets/preload-helper-3k_mjWfE.js",
         "/assets/framework-Bcj3CoQB.js",
         "/assets/query-BbOc3VB2.js"
@@ -113,9 +124,9 @@ export default {
     },
     "8c0f216c4604": {
       "js": [
-        "/assets/facade__virtual_vinext-rsc-entry-DUfRgabA.js",
+        "/assets/worker-entry-D3rhbIQ5.js",
         "/assets/rolldown-runtime-S-ySWqyJ.js",
-        "/assets/index-CkzVRFcV.js",
+        "/assets/index-0Whl7pQG.js",
         "/assets/preload-helper-3k_mjWfE.js",
         "/assets/framework-Bcj3CoQB.js",
         "/assets/query-BbOc3VB2.js"
@@ -127,7 +138,7 @@ export default {
     "app/layout.tsx": {
       "js": [],
       "css": [
-        "/assets/index-D9GOf7a9.css"
+        "/assets/index-DAMRb0WC.css"
       ]
     }
   }
