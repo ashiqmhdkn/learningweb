@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
-import AppShell from '../../components/AppShell';
+import AppShell from '../../components/Appshell';
 import { ParsedData, profileApi, Course, Subject, Unit } from '@/api/api';
 import { ChevronDown, ChevronRight, Video, FileText, Layers, ArrowLeft, BookOpen } from 'lucide-react';
 
@@ -69,7 +69,7 @@ export default function CoursePage() {
     <AppShell>
       <div className="p-6 lg:p-10 max-w-4xl mx-auto">
         {/* Back */}
-        <Link href="/courses" className="inline-flex items-center gap-2 text-slate-soft hover:text-gold text-sm mb-6 transition-colors fade-up fade-up-1">
+        <Link href="/dashboard" className="inline-flex items-center gap-2 text-slate-soft hover:text-gold text-sm mb-6 transition-colors fade-up fade-up-1">
           <ArrowLeft size={15} /> All Courses
         </Link>
 
@@ -91,7 +91,7 @@ export default function CoursePage() {
               return (
                 <Link
                   key={subject.subject_id}
-                  href={`/courses/${courseId}/subject/${subject.subject_id}`}
+                  href={`/subjects/${subject.subject_id}`}
                   className="group"
                 >
                   <div className="bg-neutral-primary-soft block max-w-sm p-6  rounded-base shadow-xs">

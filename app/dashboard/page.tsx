@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import AppShell from '../components/AppShell';
+import AppShell from '@/app/components/Appshell';
 import { profileApi, ParsedData } from '@/api/api';
 import {
   BookOpen, Video, FileText, GraduationCap,
@@ -57,7 +57,7 @@ export default function DashboardPage() {
 
   return (
     <AppShell>
-      <div className="p-6 lg:p-10 max-w-7xl mx-auto">
+      <div className="p-6 lg:pt-10 max-w-7xl mx-auto">
         {/* Header */}
         <div className="mb-10 fade-up fade-up-1">
           <div className="flex items-start justify-between">
@@ -124,19 +124,19 @@ export default function DashboardPage() {
               <h2 className="font-display text-xl font-bold text-white">Your Batches</h2>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+            <div className="grid sm:grid-cols-1 md:grid-cols-2 grid-cols-3 gap-6">
               {data.courses.map((course) => (
                 <Link
                 key={course.course_id}
                   href={`/courses/${course.course_id}`}
-                  className="rounded-2xl overflow-hidden card-hover block"
+                  className="rounded-2xl overflow-hidden p-16 card-hover block columns-3xs"
                   style={{ background: '#1C202E', border: '1px solid rgba(42,47,58,0.5)' }}
                 >
                   {/* Image */}
                   <div className="h-36 relative overflow-hidden" style={{ background: 'linear-gradient(135deg, #1a1500, #242840)' }}>
                     {course.course_image ? (
                       // eslint-disable-next-line @next/next/no-img-element
-                      <img src={course.course_image} alt={course.title} className=" h-[360] object-cover opacity-80" />
+                      <img src={course.course_image} alt={course.title} className=" h-[300] object-cover opacity-80 aspect-16/9" />
                     ) : (
                       <div className="w-full h-full flex items-center justify-center">
                         <GraduationCap size={36} color="rgba(201,168,76,0.3)" />

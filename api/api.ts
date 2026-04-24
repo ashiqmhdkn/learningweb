@@ -148,7 +148,7 @@ export function hashPasswordWithSalt(
 export async function loginApi(
   email: string,
   password: string
-): Promise<{ token: string; user: User }> {
+): Promise<{ token: string;}> {
   const hashed: string = hashPasswordWithSalt(
   password,
   "y6SsdIR"
@@ -170,7 +170,6 @@ export async function loginApi(
 
   return {
     token: body.token ?? body.data?.token,
-    user: body.user ?? body.data?.user ?? {},
   };
 }
 
@@ -207,8 +206,18 @@ function parseProfileData(data: ProfileData): ParsedData {
   const units: Unit[] = [];
   const videos: Video[] = [];
   const notes: Note[] = [];
+  const user: User = {
+    id: String(data.user?.id ?? ''),
+    username: String(data.user?.username ?? ''),
+    email: String(data.user?.email ?? ''),
+    phone: data.user?.phone ?? undefined,
+    profile_image: data.user?.profile_image ?? undefined,
+    role: data.user?.role ?? undefined,
+    created_at: data.user?.created_at ?? undefined,
+  };
 
   const batchesRaw = data.batches ?? {};
+
 
   for (const [, batchRaw] of Object.entries(batchesRaw)) {
     const courseRaw = batchRaw.course;
@@ -287,7 +296,7 @@ function parseProfileData(data: ProfileData): ParsedData {
     }
   }
 
-  return { user: data.user, batches, courses, subjects, units, videos, notes };
+  return { user, batches, courses, subjects, units, videos, notes };
 }
 
 function parseCourse(courseRaw: CourseRaw): Course {

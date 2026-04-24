@@ -25,7 +25,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const t = localStorage.getItem('cl_token');
     const u = localStorage.getItem('cl_user');
     if (t) setToken(t);
-    if (u) setUser(JSON.parse(u));
+    if (u && u !== "undefined") setUser(JSON.parse(u))
   }, []);
 
   const setAuth = (t: string, u: User) => {

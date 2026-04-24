@@ -1,26 +1,30 @@
 'use client';
 
-import { useEffect } from 'react';
-import { useRouter } from 'next/navigation';
-import { useAuth } from '@/api/auth-context';
-import Sidebar from './Sidebar';
+import Navbar from './Navbar';
 
-export default function AppShell({ children }: { children: React.ReactNode }) {
-  const { token } = useAuth();
-  const router = useRouter();
-
-  useEffect(() => {
-    // Check both context and localStorage (handles page refresh)
-    const t = token ?? localStorage.getItem('cl_token');
-    if (!t) router.replace('/login');
-  }, [token, router]);
-
+export default function AppShell({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   return (
-    <div className="flex min-h-screen">
-      <Sidebar />
-      <main className="flex-1 lg:ml-64 min-h-screen">
-        {children}
+    <div className="min-h-screen bg-base-900 flex-inline flex-col ">
+
+      {/* Desktop Top Navbar */}
+      <div className="block flex-none">
+        <Navbar />
+      </div>
+
+      {/* Main Content */}
+      <main className="pt-16 lg:pt-16 pb-16 lg:pb-0 flex-1">
+        <div className='pt-4'>{children}</div>
       </main>
+
+      {/* Mobile + Tablet Bottom Navbar */}
+      <div className="fixed hidden bottom-0 left-0 right-0 z-50 flex-none">
+        <Navbar />
+      </div>
+
     </div>
   );
 }

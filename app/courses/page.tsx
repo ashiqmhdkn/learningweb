@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import AppShell from '../components/AppShell';
+import AppShell from '../components/Appshell';
 import { ParsedData, profileApi } from '@/api/api';
 import {
   BookOpen,
