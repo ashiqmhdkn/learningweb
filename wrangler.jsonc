@@ -1,6 +1,6 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
-  "main": ".open-next/worker.js",
+   "main": "./worker/index.ts", 
   "name": "learningweb",
   "compatibility_date": "2026-04-22",
   "compatibility_flags": [
