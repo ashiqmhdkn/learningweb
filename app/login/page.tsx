@@ -22,12 +22,13 @@ export default function LoginPage() {
     setLoading(true);
 
     try {
-      const { token, user } = await loginApi(identifier, password);
-      setAuth(token, user);
+      const { token} = await loginApi(identifier, password);
+      
 
       // pre-fetch and cache profile data
       try {
         const data = await profileApi(token);
+        setAuth(token,data.user);
         localStorage.setItem('cl_data', JSON.stringify(data));
       } catch (_) {
         // non-fatal
