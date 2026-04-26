@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import Appshell from '@/app/components/Appshell';
+import AppShell from '@/app/components/Appshell';
 import { profileApi, ParsedData } from '@/api/api';
 import {
   BookOpen, Video, FileText, GraduationCap,
@@ -56,7 +56,7 @@ export default function DashboardPage() {
     : [];
 
   return (
-    <Appshell>
+    <AppShell>
       <div className="p-6 lg:pt-10 w-full mx-auto">
         {/* Header */}
         <div className="mb-10 fade-up fade-up-1">
@@ -165,6 +165,6 @@ export default function DashboardPage() {
           </div>
         )}
       </div>
-    </Appshell>
+    </AppShell>
   );
 }

@@ -2,7 +2,7 @@
 
 import Navbar from './Navbar';
 
-export default function AppShell({
+export default function Appshell({
   children,
 }: {
   children: React.ReactNode;
