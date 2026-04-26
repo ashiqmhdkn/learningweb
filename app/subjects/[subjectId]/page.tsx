@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
-import AppShell from '@/app/components/Appshell';
+import AppShell from '@/app/components/AppShell';
 import { ParsedData, profileApi, Unit, Video, Note } from '@/api/api';
 import { ArrowLeft, Video as VideoIcon, FileText, Download, Play, Clock } from 'lucide-react';
 
@@ -55,7 +55,7 @@ export default function SubjectPage() {
       <AppShell>
         <div className="p-10 text-center">
           <p className="text-slate-soft">Unit not found</p>
-          <Link href={`/dashbroad`} className="text-gold text-sm mt-3 inline-flex items-center gap-1">
+          <Link href={`/dashboard`} className="text-gold text-sm mt-3 inline-flex items-center gap-1">
             <ArrowLeft size={14} /> Back to home
           </Link>
         </div>
@@ -68,7 +68,7 @@ export default function SubjectPage() {
       <div className="p-6 lg:p-10 w-full mx-auto">
         {/* Back */}
         <Link 
-          href={`/dashbroad`} 
+          href={`/dashboard`} 
           className="inline-flex items-center gap-2 text-slate-soft hover:text-gold text-sm mb-6 transition-colors fade-up fade-up-1"
         >
           <ArrowLeft size={15} /> Back to home

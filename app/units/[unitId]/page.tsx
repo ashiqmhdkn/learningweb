@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
-import AppShell from '@/app/components/Appshell';
+import AppShell from '@/app/components/AppShell';
 import { ParsedData, profileApi, Unit, Video, Note } from '@/api/api';
 import { ArrowLeft, Video as VideoIcon, FileText, Download, Play, Clock } from 'lucide-react';
 
