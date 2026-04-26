@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import AppShell from '../components/Appshell';
+import Appshell from '../components/Appshell';
 import { ParsedData, profileApi } from '@/api/api';
 import {
   BookOpen,
@@ -91,7 +91,7 @@ export default function CoursesPage() {
   });
 
   return (
-    <AppShell>
+    <Appshell>
       <div
         style={{
           minHeight: '100vh',
@@ -234,7 +234,7 @@ export default function CoursesPage() {
           )}
         </main>
       </div>
-    </AppShell>
+    </Appshell>
   );
 }
 

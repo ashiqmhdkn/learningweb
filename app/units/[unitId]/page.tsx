@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
-import AppShell from '@/app/components/Appshell';
+import Appshell from '@/app/components/Appshell';
 import { ParsedData, profileApi, Unit, Video, Note } from '@/api/api';
 import { ArrowLeft, Video as VideoIcon, FileText, Download, Play, Clock } from 'lucide-react';
 
@@ -53,29 +53,29 @@ export default function UnitPage() {
 
   if (loading) {
     return (
-      <AppShell>
+      <Appshell>
         <div className="p-6 lg:p-10">
           <div className="shimmer rounded-2xl mb-6" style={{ height: 400, background: '#1C202E' }} />
         </div>
-      </AppShell>
+      </Appshell>
     );
   }
 
   if (!unit) {
     return (
-      <AppShell>
+      <Appshell>
         <div className="p-10 text-center">
           <p className="text-slate-soft">Unit not found</p>
           <Link href={`/courses/${courseId}`} className="text-gold text-sm mt-3 inline-flex items-center gap-1">
             <ArrowLeft size={14} /> Back to course
           </Link>
         </div>
-      </AppShell>
+      </Appshell>
     );
   }
 
   return (
-    <AppShell>
+    <Appshell>
       <div className="p-6 lg:p-10 max-w-7xl mx-auto">
         {/* Back */}
         <Link 
@@ -231,6 +231,6 @@ export default function UnitPage() {
           </div>
         </div>
       </div>
-    </AppShell>
+    </Appshell>
   );
 }

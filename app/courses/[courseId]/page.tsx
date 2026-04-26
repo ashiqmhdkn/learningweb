@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
-import AppShell from '../../components/Appshell';
+import Appshell from '../../components/Appshell';
 import { ParsedData, profileApi, Course, Subject, Unit } from '@/api/api';
 import { ChevronDown, ChevronRight, Video, FileText, Layers, ArrowLeft, BookOpen } from 'lucide-react';
 
@@ -40,20 +40,20 @@ export default function CoursePage() {
 
   if (loading) {
     return (
-      <AppShell>
+      <Appshell>
         <div className="p-10 max-w-4xl mx-auto">
           <div className="shimmer rounded-2xl mb-6" style={{ height: 120, background: '#1C202E' }} />
           {[...Array(3)].map((_, i) => (
             <div key={i} className="shimmer rounded-xl mb-3" style={{ height: 60, background: '#1C202E' }} />
           ))}
         </div>
-      </AppShell>
+      </Appshell>
     );
   }
 
   if (!course) {
     return (
-      <AppShell>
+      <Appshell>
         <div className="p-10 text-center">
           <BookOpen size={48} color="rgba(138,149,168,0.3)" className="mx-auto mb-4" />
           <p className="text-slate-soft">Course not found</p>
@@ -61,12 +61,12 @@ export default function CoursePage() {
             <ArrowLeft size={14} /> Back to courses
           </Link>
         </div>
-      </AppShell>
+      </Appshell>
     );
   }
 
   return (
-    <AppShell>
+    <Appshell>
       <div className="p-6 lg:p-10 w-full mx-auto">
         {/* Back */}
         <Link href="/dashboard" className="inline-flex items-center gap-2 text-slate-soft hover:text-gold text-sm mb-6 transition-colors fade-up fade-up-1">
@@ -107,6 +107,6 @@ export default function CoursePage() {
           </div>
         </div>
       </div>
-    </AppShell>
+    </Appshell>
   );
 }

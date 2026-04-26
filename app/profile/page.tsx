@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import AppShell from '../components/Appshell';
+import Appshell from '../components/Appshell';
 import { useAuth } from '@/api/auth-context';
 import { User as UserIcon, Mail, Phone, Calendar, Shield, BookOpen, Video, FileText } from 'lucide-react';
 import { ParsedData } from '@/api/api';
@@ -34,7 +34,7 @@ export default function ProfilePage() {
     : [];
 
   return (
-    <AppShell>
+    <Appshell>
       <div className="p-6 lg:p-10 max-w-4xl mx-auto">
         {/* Header */}
         <div className="mb-10 fade-up fade-up-1">
@@ -138,6 +138,6 @@ export default function ProfilePage() {
           </div>
         </div>
       </div>
-    </AppShell>
+    </Appshell>
   );
 }
