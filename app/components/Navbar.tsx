@@ -28,10 +28,10 @@ export default function Navbar() {
   };
 
   return (
-    <nav className="bg-white shadow-lg border-t md:border-t-0 md:border-b border-gray-200 fixed w-full z-50 bottom-0 md:top-0 md:bottom-auto">
+    <nav className="bg-white shadow-lg border-b h-16 md:border-t-0 md:border-b border-white-200 fixed w-full z-50 bottom-0 md:top-0 md:bottom-auto">
       <div className="max-w-7xl mx-auto px-4">
-        <div className="flex justify-between items-center h-16">
-          <div className="hidden md:flex items-center">
+        <div className="flex justify-start items-center h-16">
+          <div className=" md:flex items-center">
             <span className="font-bold text-xl">Crescent</span>
           </div>
           <div className="flex w-full md:w-auto justify-around md:justify-end md:space-x-4">

@@ -8,23 +8,23 @@ export default function AppShell({
   children: React.ReactNode;
 }) {
   return (
-    <div className="min-h-screen bg-base-900 flex-inline flex-col ">
+<div className="min-h-screen bg-base-900 flex flex-col">
 
-      {/* Desktop Top Navbar */}
-      <div className="block flex-none">
-        <Navbar />
-      </div>
+  {/* Desktop top navbar — fixed */}
+  <header className="fixed top-0 left-0 right-0 z-50 h-16 hidden md:block">
+    <Navbar />
+  </header>
 
-      {/* Main Content */}
-      <main className="pt-16 lg:pt-16 pb-16 lg:pb-0 flex-1">
-        <div className='pt-4'>{children}</div>
-      </main>
+  {/* Main content — mt-16 clears the fixed top navbar on desktop */}
+  <main className="flex-1 overflow-auto" style={{ marginTop: '50px' }}>
+  <div className="pt-4">{children}</div>
+</main>
 
-      {/* Mobile + Tablet Bottom Navbar */}
-      <div className="fixed hidden bottom-0 left-0 right-0 z-50 flex-none">
-        <Navbar />
-      </div>
+  {/* Mobile bottom navbar — fixed */}
+  <div className="fixed bottom-0 left-0 right-0 z-50 md:hidden">
+    <Navbar />
+  </div>
 
-    </div>
+</div>
   );
 }

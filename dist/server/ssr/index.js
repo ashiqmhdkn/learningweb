@@ -9672,6 +9672,13 @@ var require_react_server_dom_webpack_client_edge_production = /* @__PURE__ */ __
 		registerBoundServerReference(action, id, bound, encodeFormAction);
 		return action;
 	}
+	function createServerReference$1(id, callServer, encodeFormAction) {
+		function action() {
+			return callServer(id, Array.prototype.slice.call(arguments));
+		}
+		registerBoundServerReference(action, id, null, encodeFormAction);
+		return action;
+	}
 	function ReactPromise(status, value, reason) {
 		this.status = status;
 		this.value = value;
@@ -10529,6 +10536,9 @@ var require_react_server_dom_webpack_client_edge_production = /* @__PURE__ */ __
 		startReadingFromStream(options, stream, close.bind(null, options));
 		return getChunk(options, 0);
 	};
+	exports.createServerReference = function(id) {
+		return createServerReference$1(id, noServerCall);
+	};
 }));
 //#endregion
 //#region node_modules/@vitejs/plugin-rsc/dist/react/ssr.js
@@ -10541,44 +10551,47 @@ function createFromReadableStream(stream, options = {}) {
 		...options
 	});
 }
+function createServerReference(id) {
+	return import_client_edge.createServerReference(id);
+}
 //#endregion
 //#region \0virtual:vite-rsc/client-references
 var client_references_default = {
 	"fca983fe7b7c": async () => {
-		return (await import("./assets/worker-entry-CWNG3z5f.js")).export_fca983fe7b7c;
+		return (await import("./assets/worker-entry-BcNLCMWT.js")).export_fca983fe7b7c;
 	},
 	"061b9fa1e40a": async () => {
-		return (await import("./assets/worker-entry-CWNG3z5f.js")).export_061b9fa1e40a;
+		return (await import("./assets/worker-entry-BcNLCMWT.js")).export_061b9fa1e40a;
 	},
 	"c237b91ab318": async () => {
-		return (await import("./assets/worker-entry-CWNG3z5f.js")).export_c237b91ab318;
+		return (await import("./assets/worker-entry-BcNLCMWT.js")).export_c237b91ab318;
 	},
 	"e16c1c1133d5": async () => {
-		return (await import("./assets/worker-entry-CWNG3z5f.js")).export_e16c1c1133d5;
+		return (await import("./assets/worker-entry-BcNLCMWT.js")).export_e16c1c1133d5;
 	},
 	"b49ea5cf04c0": async () => {
-		return (await import("./assets/worker-entry-CWNG3z5f.js")).export_b49ea5cf04c0;
+		return (await import("./assets/worker-entry-BcNLCMWT.js")).export_b49ea5cf04c0;
 	},
 	"6efdf509a785": async () => {
-		return (await import("./assets/worker-entry-CWNG3z5f.js")).export_6efdf509a785;
+		return (await import("./assets/worker-entry-BcNLCMWT.js")).export_6efdf509a785;
 	},
 	"b5f72a92d407": async () => {
-		return (await import("./assets/worker-entry-CWNG3z5f.js")).export_b5f72a92d407;
+		return (await import("./assets/worker-entry-BcNLCMWT.js")).export_b5f72a92d407;
 	},
 	"fd66447d98ef": async () => {
-		return (await import("./assets/worker-entry-CWNG3z5f.js")).export_fd66447d98ef;
+		return (await import("./assets/worker-entry-BcNLCMWT.js")).export_fd66447d98ef;
 	},
 	"a92b8f6cff96": async () => {
-		return (await import("./assets/worker-entry-CWNG3z5f.js")).export_a92b8f6cff96;
+		return (await import("./assets/worker-entry-BcNLCMWT.js")).export_a92b8f6cff96;
 	},
 	"593f344dc510": async () => {
-		return (await import("./assets/worker-entry-CWNG3z5f.js")).export_593f344dc510;
+		return (await import("./assets/worker-entry-BcNLCMWT.js")).export_593f344dc510;
 	},
 	"15c18cfaeeff": async () => {
-		return (await import("./assets/worker-entry-CWNG3z5f.js")).export_15c18cfaeeff;
+		return (await import("./assets/worker-entry-BcNLCMWT.js")).export_15c18cfaeeff;
 	},
 	"8c0f216c4604": async () => {
-		return (await import("./assets/worker-entry-CWNG3z5f.js")).export_8c0f216c4604;
+		return (await import("./assets/worker-entry-BcNLCMWT.js")).export_8c0f216c4604;
 	}
 };
 //#endregion
@@ -10720,4 +10733,4 @@ var app_ssr_entry_default = { async fetch(request) {
 	return new Response(String(result), { status: 200 });
 } };
 //#endregion
-export { toSameOriginAppPath as _, getCurrentInterceptionContext as a, createAppPayloadCacheKey as b, getPrefetchedUrls as c, toRscUrl as d, app_ssr_entry_default as default, usePathname as f, toBrowserNavigationHref as g, resolveRelativeHref as h, handleSsr, require_jsx_runtime as i, navigateClientSide as l, notifyAppRouterTransitionStart as m, ParallelSlot as n, getLayoutSegmentContext as o, ReadonlyURLSearchParams as p, Slot as r, getMountedSlotsHeader as s, Children as t, prefetchRscResponse as u, withBasePath as v, stripBasePath as y };
+export { toBrowserNavigationHref as _, require_jsx_runtime as a, stripBasePath as b, getMountedSlotsHeader as c, prefetchRscResponse as d, app_ssr_entry_default as default, toRscUrl as f, resolveRelativeHref as g, notifyAppRouterTransitionStart as h, handleSsr, Slot as i, getPrefetchedUrls as l, ReadonlyURLSearchParams as m, Children as n, getCurrentInterceptionContext as o, usePathname as p, ParallelSlot as r, getLayoutSegmentContext as s, createServerReference as t, navigateClientSide as u, toSameOriginAppPath as v, createAppPayloadCacheKey as x, withBasePath as y };
