@@ -14,7 +14,6 @@ export async function POST(req: Request) {
   });
 
   const data = await res.json();
-  console.log(data);
-
+  console.log("route.ts - Login response: ",data);
   return NextResponse.json(data, { status: res.status });
 }

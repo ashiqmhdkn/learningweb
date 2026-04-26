@@ -1,24 +1,31 @@
-import type { NextConfig } from "next";
+import type { NextConfig } from 'next'
 
 const nextConfig: NextConfig = {
-  allowedDevOrigins: ['10.180.186.149'],
-  async rewrites() {
+  async headers() {
     return [
       {
-        source: '/docs/:slug*',
-        destination: '/docs/md/:slug*',
-        has: [
+        source: "/api/:path*",
+        headers: [
           {
-            type: 'header',
-            key: 'accept',
-            value: '(.*)text/markdown(.*)',
+            key: "Access-Control-Allow-Origin",
+            value: "https://api.crescentlearning.org",
+          },
+          {
+            key: "Access-Control-Allow-Credentials",
+            value: "true",
+          },
+          {
+            key: "Access-Control-Allow-Methods",
+            value: "GET,POST,PUT,PATCH,DELETE,OPTIONS",
+          },
+          {
+            key: "Access-Control-Allow-Headers",
+            value: "Content-Type, Authorization",
           },
         ],
       },
     ]
   },
-};
+}
 
-export default nextConfig;
-
-import('@opennextjs/cloudflare').then(m => m.initOpenNextCloudflareForDev());
+export default nextConfig

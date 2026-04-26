@@ -23,11 +23,11 @@ export default function LoginPage() {
 
     try {
       const { token} = await loginApi(identifier, password);
-      
-
+      console.log('Login successful with token:', token);
       // pre-fetch and cache profile data
       try {
         const data = await profileApi(token);
+        console.log('Profile data fetched on login:', data);
         setAuth(token,data.user);
         localStorage.setItem('cl_data', JSON.stringify(data));
       } catch (_) {

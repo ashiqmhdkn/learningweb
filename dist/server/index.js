@@ -1,4 +1,4 @@
-globalThis.__VINEXT_LAZY_CHUNKS__ = ["assets/query-BbOc3VB2.js","assets/router-C5uqvVNo.js","assets/worker-entry-DZ0zgh8U.js"];
+globalThis.__VINEXT_LAZY_CHUNKS__ = ["assets/query-BbOc3VB2.js","assets/router-Ds3V4D5g.js","assets/worker-entry-B6Cu6NJh.js"];
 import { a as renderToReadableStream$2, c as require_react_react_server, d as __toESM, l as __commonJSMin, n as decodeReply, o as loadServerAction, r as registerClientReference, s as setRequireModule, t as createTemporaryReferenceSet, u as __exportAll } from "./assets/encryption-runtime-DNIzdte6.js";
 import { AsyncLocalStorage } from "node:async_hooks";
 import assetsManifest from "./__vite_rsc_assets_manifest.js";
@@ -304,6 +304,286 @@ function getRequestExecutionContext() {
 	return _als$3.getStore() ?? null;
 }
 //#endregion
+//#region node_modules/vinext/dist/utils/base-path.js
+/**
+* Shared basePath helpers.
+*
+* Next.js only treats a pathname as being under basePath when it is an exact
+* match ("/app") or starts with the basePath followed by a path separator
+* ("/app/..."). Prefix-only matches like "/application" must be left intact.
+*/
+/**
+* Check whether a pathname is inside the configured basePath.
+*/
+function hasBasePath(pathname, basePath) {
+	if (!basePath) return false;
+	return pathname === basePath || pathname.startsWith(basePath + "/");
+}
+/**
+* Strip the basePath prefix from a pathname when it matches on a segment
+* boundary. Returns the original pathname when it is outside the basePath.
+*/
+function stripBasePath(pathname, basePath) {
+	if (!hasBasePath(pathname, basePath)) return pathname;
+	return pathname.slice(basePath.length) || "/";
+}
+//#endregion
+//#region node_modules/vinext/dist/server/request-pipeline.js
+/**
+* Shared request pipeline utilities.
+*
+* Extracted from the App Router RSC entry (entries/app-rsc-entry.ts) to enable
+* reuse across entry points. Currently consumed by app-rsc-entry.ts;
+* dev-server.ts, prod-server.ts, and index.ts still have inline versions
+* that should be migrated in follow-up work.
+*
+* These utilities handle the common request lifecycle steps: protocol-
+* relative URL guards, basePath stripping, trailing slash normalization,
+* and CSRF origin validation.
+*/
+/**
+* Guard against protocol-relative URL open redirects.
+*
+* Paths like `//example.com/` would be redirected to `//example.com` by the
+* trailing-slash normalizer, which browsers interpret as `http://example.com`.
+* Backslashes are equivalent to forward slashes in the URL spec
+* (e.g. `/\evil.com` is treated as `//evil.com` by browsers).
+*
+* Next.js returns 404 for these paths. We check the RAW pathname before
+* normalization so the guard fires before normalizePath collapses `//`.
+*
+* Percent-encoded variants are also blocked because:
+*   - `%5C` decodes to `\` (browsers treat `/\evil.com` as `//evil.com`).
+*   - `%2F` decodes to `/` (so `/%2F/evil.com` effectively becomes `//evil.com`).
+* These forms survive segment-wise decoding that re-encodes path delimiters
+* (e.g. `normalizePathnameForRouteMatchStrict`), so a later trailing-slash
+* redirect would still echo the encoded form in its `Location` header. See
+* `isOpenRedirectShaped` for the full list of rejected leading-segment forms.
+*
+* @param rawPathname - The raw pathname from the URL, before any normalization
+* @returns A 404 Response if the path is protocol-relative, or null to continue
+*/
+function guardProtocolRelativeUrl(rawPathname) {
+	if (isOpenRedirectShaped(rawPathname)) return new Response("404 Not Found", { status: 404 });
+	return null;
+}
+/**
+* Returns true if a request pathname looks like a protocol-relative open
+* redirect, in either literal or percent-encoded form.
+*
+* Exported for call sites that need to replicate the guard inline (Pages
+* Router worker codegen, Node production server) and for defense-in-depth
+* checks inside redirect emitters.
+*
+* A pathname is considered "open redirect shaped" when its first segment,
+* after decoding backslashes and encoded delimiters, would cause a browser
+* to resolve a `Location` containing the pathname as protocol-relative:
+*
+*   - literal   `//evil.com`
+*   - literal   `/\evil.com`             (browsers normalize `\` to `/`)
+*   - encoded   `/%5Cevil.com`           (`%5C` decodes to `\` in Location)
+*   - encoded   `/%2F/evil.com`          (`%2F` decodes to `/` → `//`)
+*   - mixed     `/%5C%2F`, `/%5C%5C`     (and other combinations)
+*
+* We explicitly do not require a valid percent sequence elsewhere in the
+* pathname — we only examine the leading bytes (up to the second real or
+* encoded delimiter) so malformed suffixes can still reach the normal
+* "400 Bad Request" decode path instead of being masked as "404".
+*/
+function isOpenRedirectShaped(rawPathname) {
+	if (!rawPathname.startsWith("/")) return false;
+	const afterSlash = rawPathname.slice(1);
+	if (afterSlash.startsWith("/") || afterSlash.startsWith("\\")) return true;
+	if (afterSlash.length >= 3 && afterSlash[0] === "%") {
+		const encoded = afterSlash.slice(0, 3).toLowerCase();
+		if (encoded === "%5c" || encoded === "%2f") return true;
+	}
+	return false;
+}
+/**
+* Check if the pathname needs a trailing slash redirect, and return the
+* redirect Response if so.
+*
+* Follows Next.js behavior:
+* - `/api` routes are never redirected
+* - The root path `/` is never redirected
+* - If `trailingSlash` is true, redirect `/about` → `/about/`
+* - If `trailingSlash` is false (default), redirect `/about/` → `/about`
+*
+* @param pathname - The basePath-stripped pathname
+* @param basePath - The basePath to prepend to the redirect Location
+* @param trailingSlash - Whether trailing slashes should be enforced
+* @param search - The query string (including `?`) to preserve in the redirect
+* @returns A 308 redirect Response, or null if no redirect is needed
+*/
+function normalizeTrailingSlash(pathname, basePath, trailingSlash, search) {
+	if (pathname === "/" || pathname === "/api" || pathname.startsWith("/api/")) return null;
+	if (isOpenRedirectShaped(pathname)) return new Response("404 Not Found", { status: 404 });
+	const hasTrailing = pathname.endsWith("/");
+	if (trailingSlash && !hasTrailing && !pathname.endsWith(".rsc")) return new Response(null, {
+		status: 308,
+		headers: { Location: basePath + pathname + "/" + search }
+	});
+	if (!trailingSlash && hasTrailing) return new Response(null, {
+		status: 308,
+		headers: { Location: basePath + pathname.replace(/\/+$/, "") + search }
+	});
+	return null;
+}
+/**
+* Validate CSRF origin for server action requests.
+*
+* Matches Next.js behavior: compares the Origin header against the Host
+* header. If they don't match, the request is rejected with 403 unless
+* the origin is in the allowedOrigins list.
+*
+* @param request - The incoming Request
+* @param allowedOrigins - Origins from experimental.serverActions.allowedOrigins
+* @returns A 403 Response if origin validation fails, or null to continue
+*/
+function validateCsrfOrigin(request, allowedOrigins = []) {
+	const originHeader = request.headers.get("origin");
+	if (!originHeader) return null;
+	if (originHeader === "null") {
+		if (allowedOrigins.includes("null")) return null;
+		console.warn(`[vinext] CSRF origin "null" blocked for server action. To allow requests from sandboxed contexts, add "null" to experimental.serverActions.allowedOrigins.`);
+		return new Response("Forbidden", {
+			status: 403,
+			headers: { "Content-Type": "text/plain" }
+		});
+	}
+	let originHost;
+	try {
+		originHost = new URL(originHeader).host.toLowerCase();
+	} catch {
+		return new Response("Forbidden", {
+			status: 403,
+			headers: { "Content-Type": "text/plain" }
+		});
+	}
+	const hostHeader = (request.headers.get("host") || "").split(",")[0].trim().toLowerCase() || new URL(request.url).host.toLowerCase();
+	if (originHost === hostHeader) return null;
+	if (allowedOrigins.length > 0 && isOriginAllowed(originHost, allowedOrigins)) return null;
+	console.warn(`[vinext] CSRF origin mismatch: origin "${originHost}" does not match host "${hostHeader}". Blocking server action request.`);
+	return new Response("Forbidden", {
+		status: 403,
+		headers: { "Content-Type": "text/plain" }
+	});
+}
+/**
+* Reject malformed Flight container reference graphs in server action payloads.
+*
+* `@vitejs/plugin-rsc` vendors its own React Flight decoder. Malicious action
+* payloads can abuse container references (`$Q`, `$W`, `$i`) to trigger very
+* expensive deserialization before the action is even looked up.
+*
+* Legitimate React-encoded container payloads use separate numeric backing
+* fields (e.g. field `1` plus root field `0` containing `"$Q1"`). We reject
+* numeric backing-field graphs that contain missing backing fields or cycles.
+* Regular user form fields are ignored entirely.
+*/
+async function validateServerActionPayload(body) {
+	const containerRefRe = /"\$([QWi])(\d+)"/g;
+	const fieldRefs = /* @__PURE__ */ new Map();
+	const collectRefs = (fieldKey, text) => {
+		const refs = /* @__PURE__ */ new Set();
+		let match;
+		containerRefRe.lastIndex = 0;
+		while ((match = containerRefRe.exec(text)) !== null) refs.add(match[2]);
+		fieldRefs.set(fieldKey, refs);
+	};
+	if (typeof body === "string") collectRefs("0", body);
+	else for (const [key, value] of body.entries()) {
+		if (!/^\d+$/.test(key)) continue;
+		if (typeof value === "string") {
+			collectRefs(key, value);
+			continue;
+		}
+		if (typeof value?.text === "function") collectRefs(key, await value.text());
+	}
+	if (fieldRefs.size === 0) return null;
+	const knownFields = new Set(fieldRefs.keys());
+	for (const refs of fieldRefs.values()) for (const ref of refs) if (!knownFields.has(ref)) return new Response("Invalid server action payload", {
+		status: 400,
+		headers: { "Content-Type": "text/plain" }
+	});
+	const visited = /* @__PURE__ */ new Set();
+	const stack = /* @__PURE__ */ new Set();
+	const hasCycle = (node) => {
+		if (stack.has(node)) return true;
+		if (visited.has(node)) return false;
+		visited.add(node);
+		stack.add(node);
+		for (const ref of fieldRefs.get(node) ?? []) if (hasCycle(ref)) return true;
+		stack.delete(node);
+		return false;
+	};
+	for (const node of fieldRefs.keys()) if (hasCycle(node)) return new Response("Invalid server action payload", {
+		status: 400,
+		headers: { "Content-Type": "text/plain" }
+	});
+	return null;
+}
+/**
+* Check if an origin matches any pattern in the allowed origins list.
+* Supports wildcard subdomains (e.g. `*.example.com`).
+*/
+/**
+* Segment-by-segment domain matching for wildcard origin patterns.
+* `*` matches exactly one DNS label; `**` matches one or more labels.
+*
+* Ported from Next.js: packages/next/src/server/app-render/csrf-protection.ts
+* https://github.com/vercel/next.js/blob/canary/packages/next/src/server/app-render/csrf-protection.ts
+*/
+function matchWildcardDomain(domain, pattern) {
+	const normalizedDomain = domain.replace(/[A-Z]/g, (c) => c.toLowerCase());
+	const normalizedPattern = pattern.replace(/[A-Z]/g, (c) => c.toLowerCase());
+	const domainParts = normalizedDomain.split(".");
+	const patternParts = normalizedPattern.split(".");
+	if (patternParts.length < 1) return false;
+	if (domainParts.length < patternParts.length) return false;
+	if (patternParts.length === 1 && (patternParts[0] === "*" || patternParts[0] === "**")) return false;
+	while (patternParts.length) {
+		const patternPart = patternParts.pop();
+		const domainPart = domainParts.pop();
+		switch (patternPart) {
+			case "": return false;
+			case "*": if (domainPart) continue;
+			else return false;
+			case "**":
+				if (patternParts.length > 0) return false;
+				return domainPart !== void 0;
+			default: if (patternPart !== domainPart) return false;
+		}
+	}
+	return domainParts.length === 0;
+}
+function isOriginAllowed(origin, allowed) {
+	for (const pattern of allowed) if (pattern.includes("*")) {
+		if (matchWildcardDomain(origin, pattern)) return true;
+	} else if (origin.toLowerCase() === pattern.toLowerCase()) return true;
+	return false;
+}
+/**
+* Validate an image optimization URL parameter.
+*
+* Ensures the URL is a relative path that doesn't escape the origin:
+* - Must start with "/" but not "//"
+* - Backslashes are normalized (browsers treat `\` as `/`)
+* - Origin validation as defense-in-depth
+*
+* @param rawUrl - The raw `url` query parameter value
+* @param requestUrl - The full request URL for origin comparison
+* @returns An error Response if validation fails, or the normalized image URL
+*/
+function validateImageUrl(rawUrl, requestUrl) {
+	const imgUrl = rawUrl?.replaceAll("\\", "/") ?? null;
+	if (!imgUrl || !imgUrl.startsWith("/") || imgUrl.startsWith("//")) return new Response(!rawUrl ? "Missing url parameter" : "Only relative URLs allowed", { status: 400 });
+	const url = new URL(requestUrl);
+	if (new URL(imgUrl, url.origin).origin !== url.origin) return new Response("Only relative URLs allowed", { status: 400 });
+	return imgUrl;
+}
+//#endregion
 //#region node_modules/vinext/dist/server/worker-utils.js
 /**
 * Shared utilities for Cloudflare Worker entries.
@@ -462,30 +742,6 @@ var ReadonlyURLSearchParams = class extends URLSearchParams {
 	}
 };
 //#endregion
-//#region node_modules/vinext/dist/utils/base-path.js
-/**
-* Shared basePath helpers.
-*
-* Next.js only treats a pathname as being under basePath when it is an exact
-* match ("/app") or starts with the basePath followed by a path separator
-* ("/app/..."). Prefix-only matches like "/application" must be left intact.
-*/
-/**
-* Check whether a pathname is inside the configured basePath.
-*/
-function hasBasePath(pathname, basePath) {
-	if (!basePath) return false;
-	return pathname === basePath || pathname.startsWith(basePath + "/");
-}
-/**
-* Strip the basePath prefix from a pathname when it matches on a segment
-* boundary. Returns the original pathname when it is outside the basePath.
-*/
-function stripBasePath(pathname, basePath) {
-	if (!hasBasePath(pathname, basePath)) return pathname;
-	return pathname.slice(basePath.length) || "/";
-}
-//#endregion
 //#region node_modules/vinext/dist/server/app-elements.js
 var APP_INTERCEPTION_SEPARATOR = "\0";
 var APP_INTERCEPTION_CONTEXT_KEY = "__interceptionContext";
@@ -551,15 +807,32 @@ function getServerInsertedHTMLContext() {
 getServerInsertedHTMLContext();
 var GLOBAL_ACCESSORS_KEY = Symbol.for("vinext.navigation.globalAccessors");
 var _GLOBAL_ACCESSORS_KEY = GLOBAL_ACCESSORS_KEY;
+var _GLOBAL_HYDRATION_CONTEXT_KEY = Symbol.for("vinext.navigation.clientHydrationContext");
 function _getGlobalAccessors() {
 	return globalThis[_GLOBAL_ACCESSORS_KEY];
 }
+function _getClientHydrationContext() {
+	const globalState = globalThis;
+	if (Object.prototype.hasOwnProperty.call(globalState, _GLOBAL_HYDRATION_CONTEXT_KEY)) return globalState[_GLOBAL_HYDRATION_CONTEXT_KEY] ?? null;
+}
+function _setClientHydrationContext(ctx) {
+	globalThis[_GLOBAL_HYDRATION_CONTEXT_KEY] = ctx;
+}
 var _serverContext = null;
 var _getServerContext = () => {
+	if (typeof window !== "undefined") {
+		const hydrationContext = _getClientHydrationContext();
+		return hydrationContext !== void 0 ? hydrationContext : _serverContext;
+	}
 	const g = _getGlobalAccessors();
 	return g ? g.getServerContext() : _serverContext;
 };
 var _setServerContext = (ctx) => {
+	if (typeof window !== "undefined") {
+		_serverContext = ctx;
+		_setClientHydrationContext(ctx);
+		return;
+	}
 	const g = _getGlobalAccessors();
 	if (g) g.setServerContext(ctx);
 	else _serverContext = ctx;
@@ -1261,7 +1534,7 @@ var NextURL = class NextURL {
 	* Matches the Next.js API: `request.nextUrl.buildId`.
 	*/
 	get buildId() {
-		return "d1fb96d3-890d-45e4-924c-909014a764fb";
+		return "ec638ae0-f716-4827-a154-af1cc3e7ee11";
 	}
 };
 var RequestCookies = class {
@@ -2804,220 +3077,6 @@ function matchHeaders(pathname, headers, ctx) {
 	return result;
 }
 //#endregion
-//#region node_modules/vinext/dist/server/request-pipeline.js
-/**
-* Shared request pipeline utilities.
-*
-* Extracted from the App Router RSC entry (entries/app-rsc-entry.ts) to enable
-* reuse across entry points. Currently consumed by app-rsc-entry.ts;
-* dev-server.ts, prod-server.ts, and index.ts still have inline versions
-* that should be migrated in follow-up work.
-*
-* These utilities handle the common request lifecycle steps: protocol-
-* relative URL guards, basePath stripping, trailing slash normalization,
-* and CSRF origin validation.
-*/
-/**
-* Guard against protocol-relative URL open redirects.
-*
-* Paths like `//example.com/` would be redirected to `//example.com` by the
-* trailing-slash normalizer, which browsers interpret as `http://example.com`.
-* Backslashes are equivalent to forward slashes in the URL spec
-* (e.g. `/\evil.com` is treated as `//evil.com` by browsers).
-*
-* Next.js returns 404 for these paths. We check the RAW pathname before
-* normalization so the guard fires before normalizePath collapses `//`.
-*
-* @param rawPathname - The raw pathname from the URL, before any normalization
-* @returns A 404 Response if the path is protocol-relative, or null to continue
-*/
-function guardProtocolRelativeUrl(rawPathname) {
-	if (rawPathname.replaceAll("\\", "/").startsWith("//")) return new Response("404 Not Found", { status: 404 });
-	return null;
-}
-/**
-* Check if the pathname needs a trailing slash redirect, and return the
-* redirect Response if so.
-*
-* Follows Next.js behavior:
-* - `/api` routes are never redirected
-* - The root path `/` is never redirected
-* - If `trailingSlash` is true, redirect `/about` → `/about/`
-* - If `trailingSlash` is false (default), redirect `/about/` → `/about`
-*
-* @param pathname - The basePath-stripped pathname
-* @param basePath - The basePath to prepend to the redirect Location
-* @param trailingSlash - Whether trailing slashes should be enforced
-* @param search - The query string (including `?`) to preserve in the redirect
-* @returns A 308 redirect Response, or null if no redirect is needed
-*/
-function normalizeTrailingSlash(pathname, basePath, trailingSlash, search) {
-	if (pathname === "/" || pathname === "/api" || pathname.startsWith("/api/")) return null;
-	const hasTrailing = pathname.endsWith("/");
-	if (trailingSlash && !hasTrailing && !pathname.endsWith(".rsc")) return new Response(null, {
-		status: 308,
-		headers: { Location: basePath + pathname + "/" + search }
-	});
-	if (!trailingSlash && hasTrailing) return new Response(null, {
-		status: 308,
-		headers: { Location: basePath + pathname.replace(/\/+$/, "") + search }
-	});
-	return null;
-}
-/**
-* Validate CSRF origin for server action requests.
-*
-* Matches Next.js behavior: compares the Origin header against the Host
-* header. If they don't match, the request is rejected with 403 unless
-* the origin is in the allowedOrigins list.
-*
-* @param request - The incoming Request
-* @param allowedOrigins - Origins from experimental.serverActions.allowedOrigins
-* @returns A 403 Response if origin validation fails, or null to continue
-*/
-function validateCsrfOrigin(request, allowedOrigins = []) {
-	const originHeader = request.headers.get("origin");
-	if (!originHeader) return null;
-	if (originHeader === "null") {
-		if (allowedOrigins.includes("null")) return null;
-		console.warn(`[vinext] CSRF origin "null" blocked for server action. To allow requests from sandboxed contexts, add "null" to experimental.serverActions.allowedOrigins.`);
-		return new Response("Forbidden", {
-			status: 403,
-			headers: { "Content-Type": "text/plain" }
-		});
-	}
-	let originHost;
-	try {
-		originHost = new URL(originHeader).host.toLowerCase();
-	} catch {
-		return new Response("Forbidden", {
-			status: 403,
-			headers: { "Content-Type": "text/plain" }
-		});
-	}
-	const hostHeader = (request.headers.get("host") || "").split(",")[0].trim().toLowerCase() || new URL(request.url).host.toLowerCase();
-	if (originHost === hostHeader) return null;
-	if (allowedOrigins.length > 0 && isOriginAllowed(originHost, allowedOrigins)) return null;
-	console.warn(`[vinext] CSRF origin mismatch: origin "${originHost}" does not match host "${hostHeader}". Blocking server action request.`);
-	return new Response("Forbidden", {
-		status: 403,
-		headers: { "Content-Type": "text/plain" }
-	});
-}
-/**
-* Reject malformed Flight container reference graphs in server action payloads.
-*
-* `@vitejs/plugin-rsc` vendors its own React Flight decoder. Malicious action
-* payloads can abuse container references (`$Q`, `$W`, `$i`) to trigger very
-* expensive deserialization before the action is even looked up.
-*
-* Legitimate React-encoded container payloads use separate numeric backing
-* fields (e.g. field `1` plus root field `0` containing `"$Q1"`). We reject
-* numeric backing-field graphs that contain missing backing fields or cycles.
-* Regular user form fields are ignored entirely.
-*/
-async function validateServerActionPayload(body) {
-	const containerRefRe = /"\$([QWi])(\d+)"/g;
-	const fieldRefs = /* @__PURE__ */ new Map();
-	const collectRefs = (fieldKey, text) => {
-		const refs = /* @__PURE__ */ new Set();
-		let match;
-		containerRefRe.lastIndex = 0;
-		while ((match = containerRefRe.exec(text)) !== null) refs.add(match[2]);
-		fieldRefs.set(fieldKey, refs);
-	};
-	if (typeof body === "string") collectRefs("0", body);
-	else for (const [key, value] of body.entries()) {
-		if (!/^\d+$/.test(key)) continue;
-		if (typeof value === "string") {
-			collectRefs(key, value);
-			continue;
-		}
-		if (typeof value?.text === "function") collectRefs(key, await value.text());
-	}
-	if (fieldRefs.size === 0) return null;
-	const knownFields = new Set(fieldRefs.keys());
-	for (const refs of fieldRefs.values()) for (const ref of refs) if (!knownFields.has(ref)) return new Response("Invalid server action payload", {
-		status: 400,
-		headers: { "Content-Type": "text/plain" }
-	});
-	const visited = /* @__PURE__ */ new Set();
-	const stack = /* @__PURE__ */ new Set();
-	const hasCycle = (node) => {
-		if (stack.has(node)) return true;
-		if (visited.has(node)) return false;
-		visited.add(node);
-		stack.add(node);
-		for (const ref of fieldRefs.get(node) ?? []) if (hasCycle(ref)) return true;
-		stack.delete(node);
-		return false;
-	};
-	for (const node of fieldRefs.keys()) if (hasCycle(node)) return new Response("Invalid server action payload", {
-		status: 400,
-		headers: { "Content-Type": "text/plain" }
-	});
-	return null;
-}
-/**
-* Check if an origin matches any pattern in the allowed origins list.
-* Supports wildcard subdomains (e.g. `*.example.com`).
-*/
-/**
-* Segment-by-segment domain matching for wildcard origin patterns.
-* `*` matches exactly one DNS label; `**` matches one or more labels.
-*
-* Ported from Next.js: packages/next/src/server/app-render/csrf-protection.ts
-* https://github.com/vercel/next.js/blob/canary/packages/next/src/server/app-render/csrf-protection.ts
-*/
-function matchWildcardDomain(domain, pattern) {
-	const normalizedDomain = domain.replace(/[A-Z]/g, (c) => c.toLowerCase());
-	const normalizedPattern = pattern.replace(/[A-Z]/g, (c) => c.toLowerCase());
-	const domainParts = normalizedDomain.split(".");
-	const patternParts = normalizedPattern.split(".");
-	if (patternParts.length < 1) return false;
-	if (domainParts.length < patternParts.length) return false;
-	if (patternParts.length === 1 && (patternParts[0] === "*" || patternParts[0] === "**")) return false;
-	while (patternParts.length) {
-		const patternPart = patternParts.pop();
-		const domainPart = domainParts.pop();
-		switch (patternPart) {
-			case "": return false;
-			case "*": if (domainPart) continue;
-			else return false;
-			case "**":
-				if (patternParts.length > 0) return false;
-				return domainPart !== void 0;
-			default: if (patternPart !== domainPart) return false;
-		}
-	}
-	return domainParts.length === 0;
-}
-function isOriginAllowed(origin, allowed) {
-	for (const pattern of allowed) if (pattern.includes("*")) {
-		if (matchWildcardDomain(origin, pattern)) return true;
-	} else if (origin.toLowerCase() === pattern.toLowerCase()) return true;
-	return false;
-}
-/**
-* Validate an image optimization URL parameter.
-*
-* Ensures the URL is a relative path that doesn't escape the origin:
-* - Must start with "/" but not "//"
-* - Backslashes are normalized (browsers treat `\` as `/`)
-* - Origin validation as defense-in-depth
-*
-* @param rawUrl - The raw `url` query parameter value
-* @param requestUrl - The full request URL for origin comparison
-* @returns An error Response if validation fails, or the normalized image URL
-*/
-function validateImageUrl(rawUrl, requestUrl) {
-	const imgUrl = rawUrl?.replaceAll("\\", "/") ?? null;
-	if (!imgUrl || !imgUrl.startsWith("/") || imgUrl.startsWith("//")) return new Response(!rawUrl ? "Missing url parameter" : "Only relative URLs allowed", { status: 400 });
-	const url = new URL(requestUrl);
-	if (new URL(imgUrl, url.origin).origin !== url.origin) return new Response("Only relative URLs allowed", { status: 400 });
-	return imgUrl;
-}
-//#endregion
 //#region node_modules/vinext/dist/server/app-route-handler-runtime.js
 var ROUTE_HANDLER_HTTP_METHODS = [
 	"GET",
@@ -4128,12 +4187,22 @@ function buildAppPageElements(options) {
 			elements[slotId] = APP_UNMATCHED_SLOT_WIRE_VALUE;
 			continue;
 		}
-		const slotProps = { params: options.makeThenableParams(slotParams) };
+		const slotThenableParams = options.makeThenableParams(slotParams);
+		const slotProps = { params: slotThenableParams };
 		if (slotOverride?.props) Object.assign(slotProps, slotOverride.props);
 		let slotElement = /* @__PURE__ */ (0, import_jsx_runtime_react_server.jsx)(slotComponent, { ...slotProps });
+		const interceptLayouts = slotOverride?.layoutModules ?? [];
+		for (let layoutIndex = interceptLayouts.length - 1; layoutIndex >= 0; layoutIndex--) {
+			const interceptLayoutComponent = getDefaultExport$1(interceptLayouts[layoutIndex]);
+			if (!interceptLayoutComponent) continue;
+			slotElement = /* @__PURE__ */ (0, import_jsx_runtime_react_server.jsx)(interceptLayoutComponent, {
+				params: slotThenableParams,
+				children: slotElement
+			});
+		}
 		const slotLayoutComponent = getDefaultExport$1(slot.layout);
 		if (slotLayoutComponent) slotElement = /* @__PURE__ */ (0, import_jsx_runtime_react_server.jsx)(slotLayoutComponent, {
-			params: options.makeThenableParams(slotParams),
+			params: slotThenableParams,
 			children: slotElement
 		});
 		const slotLoadingComponent = getDefaultExport$1(slot.loading);
@@ -6083,7 +6152,7 @@ async function POST(req) {
 		body: JSON.stringify(body)
 	});
 	const data = await res.json();
-	console.log(data);
+	console.log("route.ts - Login response: " + data);
 	return NextResponse.json(data, { status: res.status });
 }
 //#endregion
@@ -6097,7 +6166,7 @@ async function GET(req) {
 		Authorization: token
 	} });
 	const data = await res.json();
-	console.log(data);
+	console.log("route.ts - Profile response: " + data);
 	return NextResponse.json(data, { status: res.status });
 }
 //#endregion
@@ -6234,7 +6303,7 @@ function __isrFnv1a64(s) {
 }
 function __isrCacheKey(pathname, suffix) {
 	const normalized = pathname === "/" ? "/" : pathname.replace(/\/$/, "");
-	const prefix = "app:d1fb96d3-890d-45e4-924c-909014a764fb";
+	const prefix = "app:ec638ae0-f716-4827-a154-af1cc3e7ee11";
 	const key = prefix + ":" + normalized + ":" + suffix;
 	if (key.length <= 200) return key;
 	return prefix + ":__hash:" + __isrFnv1a64(normalized) + ":" + suffix;
@@ -6296,6 +6365,16 @@ function createRscOnErrorHandler(request, pathname, routePath) {
 }
 function __VINEXT_CLASS(routeIdx) { return ((routeIdx) => {
     switch (routeIdx) {
+      case 0: return new Map([[0, "static"]]);
+      case 1: return new Map([[0, "static"]]);
+      case 2: return new Map([[0, "static"]]);
+      case 3: return new Map([[0, "static"]]);
+      case 4: return new Map([[0, "static"]]);
+      case 5: return new Map([[0, "static"]]);
+      case 6: return new Map([[0, "static"]]);
+      case 7: return new Map([[0, "static"]]);
+      case 8: return new Map([[0, "static"]]);
+      case 9: return new Map([[0, "static"]]);
       default: return null;
     }
   })(routeIdx); }
@@ -6678,6 +6757,7 @@ for (let ri = 0; ri < routes.length; ri++) {
 			slotKey,
 			targetPattern: intercept.targetPattern,
 			targetPatternParts: intercept.targetPattern.split("/").filter(Boolean),
+			interceptLayouts: intercept.interceptLayouts,
 			page: intercept.page,
 			params: intercept.params
 		});
@@ -6779,6 +6859,7 @@ async function buildPageElements(route, params, routePath, pageRequest) {
 		rootNotFoundModule: null,
 		route,
 		slotOverrides: opts && opts.interceptSlotKey && opts.interceptPage ? { [opts.interceptSlotKey]: {
+			layoutModules: opts.interceptLayouts || null,
 			pageModule: opts.interceptPage,
 			params: opts.interceptParams || params
 		} } : null
@@ -6790,18 +6871,30 @@ var __i18nConfig = null;
 var __configRedirects = [];
 var __configRewrites = {
 	"beforeFiles": [],
-	"afterFiles": [{
-		"source": "/docs/:slug*",
-		"destination": "/docs/md/:slug*",
-		"has": [{
-			"type": "header",
-			"key": "accept",
-			"value": "(.*)text/markdown(.*)"
-		}]
-	}],
+	"afterFiles": [],
 	"fallback": []
 };
-var __configHeaders = [];
+var __configHeaders = [{
+	"source": "/api/:path*",
+	"headers": [
+		{
+			"key": "Access-Control-Allow-Origin",
+			"value": "https://api.crescentlearning.org"
+		},
+		{
+			"key": "Access-Control-Allow-Credentials",
+			"value": "true"
+		},
+		{
+			"key": "Access-Control-Allow-Methods",
+			"value": "GET,POST,PUT,PATCH,DELETE,OPTIONS"
+		},
+		{
+			"key": "Access-Control-Allow-Headers",
+			"value": "Content-Type, Authorization"
+		}
+	]
+}];
 var __publicFiles = new Set([
 	"/_headers",
 	"/file.svg",
@@ -7207,6 +7300,7 @@ async function _handleRequest(request, __reqCtx, _mwCtx) {
 					toInterceptOpts(intercept) {
 						return {
 							interceptionContext: interceptionContextHeader,
+							interceptLayouts: intercept.interceptLayouts,
 							interceptSlotKey: intercept.slotKey,
 							interceptPage: intercept.page,
 							interceptParams: intercept.matchedParams
@@ -7557,6 +7651,7 @@ async function _handleRequest(request, __reqCtx, _mwCtx) {
 		toInterceptOpts(intercept) {
 			return {
 				interceptionContext: interceptionContextHeader,
+				interceptLayouts: intercept.interceptLayouts,
 				interceptSlotKey: intercept.slotKey,
 				interceptPage: intercept.page,
 				interceptParams: intercept.matchedParams
@@ -7751,7 +7846,13 @@ async function _handleRequest(request, __reqCtx, _mwCtx) {
 *   cloudflare({ viteEnvironment: { name: "rsc", childEnvironments: ["ssr"] } })
 */
 var app_router_entry_default = { async fetch(request, env, ctx) {
-	if (new URL(request.url).pathname.replaceAll("\\", "/").startsWith("//")) return new Response("404 Not Found", { status: 404 });
+	const url = new URL(request.url);
+	if (isOpenRedirectShaped(url.pathname)) return new Response("404 Not Found", { status: 404 });
+	try {
+		decodeURIComponent(url.pathname);
+	} catch {
+		return new Response("Bad Request", { status: 400 });
+	}
 	const handleFn = () => handler(request, ctx);
 	const result = await (ctx ? runWithExecutionContext(ctx, handleFn) : handleFn());
 	if (result instanceof Response) {

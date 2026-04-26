@@ -12,7 +12,7 @@ export async function GET(req: Request) {
   });
 
   const data = await res.json();
-  console.log(data);
+  console.log("route.ts - Profile response: ",data);
 
   return NextResponse.json(data, { status: res.status });
 }

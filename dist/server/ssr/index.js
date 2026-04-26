@@ -214,16 +214,33 @@ function getLayoutSegmentContext() {
 }
 var GLOBAL_ACCESSORS_KEY = Symbol.for("vinext.navigation.globalAccessors");
 var _GLOBAL_ACCESSORS_KEY = GLOBAL_ACCESSORS_KEY;
+var _GLOBAL_HYDRATION_CONTEXT_KEY = Symbol.for("vinext.navigation.clientHydrationContext");
 function _getGlobalAccessors() {
 	return globalThis[_GLOBAL_ACCESSORS_KEY];
+}
+function _getClientHydrationContext() {
+	const globalState = globalThis;
+	if (Object.prototype.hasOwnProperty.call(globalState, _GLOBAL_HYDRATION_CONTEXT_KEY)) return globalState[_GLOBAL_HYDRATION_CONTEXT_KEY] ?? null;
+}
+function _setClientHydrationContext(ctx) {
+	globalThis[_GLOBAL_HYDRATION_CONTEXT_KEY] = ctx;
 }
 var _serverContext = null;
 var _serverInsertedHTMLCallbacks = [];
 var _getServerContext = () => {
+	if (typeof window !== "undefined") {
+		const hydrationContext = _getClientHydrationContext();
+		return hydrationContext !== void 0 ? hydrationContext : _serverContext;
+	}
 	const g = _getGlobalAccessors();
 	return g ? g.getServerContext() : _serverContext;
 };
 var _setServerContext = (ctx) => {
+	if (typeof window !== "undefined") {
+		_serverContext = ctx;
+		_setClientHydrationContext(ctx);
+		return;
+	}
 	const g = _getGlobalAccessors();
 	if (g) g.setServerContext(ctx);
 	else _serverContext = ctx;
@@ -412,6 +429,7 @@ function syncCommittedUrlStateFromLocation() {
 	}
 	return changed;
 }
+var _EMPTY_PARAMS = {};
 var _CLIENT_NAV_RENDER_CTX_KEY = Symbol.for("vinext.clientNavigationRenderContext");
 function getClientNavigationRenderContext() {
 	if (typeof import_react.createContext !== "function") return null;
@@ -427,6 +445,12 @@ function useClientNavigationRenderSnapshot() {
 	} catch {
 		return null;
 	}
+}
+function getClientParamsSnapshot() {
+	return getClientNavigationState()?.clientParams ?? _EMPTY_PARAMS;
+}
+function getServerParamsSnapshot() {
+	return _getServerContext()?.params ?? _EMPTY_PARAMS;
 }
 function subscribeToNavigation(cb) {
 	const state = getClientNavigationState();
@@ -446,6 +470,16 @@ function usePathname() {
 	const pathname = import_react.useSyncExternalStore(subscribeToNavigation, getPathnameSnapshot, () => _getServerContext()?.pathname ?? "/");
 	if (renderSnapshot && (getClientNavigationState()?.navigationSnapshotActiveCount ?? 0) > 0) return renderSnapshot.pathname;
 	return pathname;
+}
+/**
+* Returns the dynamic params for the current route.
+*/
+function useParams() {
+	if (isServer) return _getServerContext()?.params ?? _EMPTY_PARAMS;
+	const renderSnapshot = useClientNavigationRenderSnapshot();
+	const params = import_react.useSyncExternalStore(subscribeToNavigation, getClientParamsSnapshot, getServerParamsSnapshot);
+	if (renderSnapshot && (getClientNavigationState()?.navigationSnapshotActiveCount ?? 0) > 0) return renderSnapshot.params;
+	return params;
 }
 /**
 * Check if a href is an external URL (any URL scheme per RFC 3986, or protocol-relative).
@@ -606,6 +640,67 @@ async function navigateClientSide(href, mode, scroll, programmaticTransition = f
 	}
 	if (scroll) if (hash) scrollToHash(hash);
 	else window.scrollTo(0, 0);
+}
+var _appRouter = {
+	push(href, options) {
+		if (isServer) return;
+		import_react.startTransition(() => {
+			navigateClientSide(href, "push", options?.scroll !== false, true);
+		});
+	},
+	replace(href, options) {
+		if (isServer) return;
+		import_react.startTransition(() => {
+			navigateClientSide(href, "replace", options?.scroll !== false, true);
+		});
+	},
+	back() {
+		if (isServer) return;
+		window.history.back();
+	},
+	forward() {
+		if (isServer) return;
+		window.history.forward();
+	},
+	refresh() {
+		if (isServer) return;
+		const rscNavigate = window.__VINEXT_RSC_NAVIGATE__;
+		if (typeof rscNavigate === "function") {
+			const navigate = () => {
+				rscNavigate(window.location.href, 0, "refresh", void 0, void 0, true);
+			};
+			import_react.startTransition(navigate);
+		}
+	},
+	prefetch(href) {
+		if (isServer) return;
+		const rscUrl = toRscUrl(toBrowserNavigationHref(href, window.location.href, ""));
+		const interceptionContext = getCurrentInterceptionContext();
+		const cacheKey = createAppPayloadCacheKey(rscUrl, interceptionContext);
+		const prefetched = getPrefetchedUrls();
+		if (prefetched.has(cacheKey)) return;
+		prefetched.add(cacheKey);
+		const mountedSlotsHeader = getMountedSlotsHeader();
+		const headers = new Headers({ Accept: "text/x-component" });
+		if (mountedSlotsHeader) headers.set("X-Vinext-Mounted-Slots", mountedSlotsHeader);
+		if (interceptionContext !== null) headers.set("X-Vinext-Interception-Context", interceptionContext);
+		prefetchRscResponse(rscUrl, fetch(rscUrl, {
+			headers,
+			credentials: "include",
+			priority: "low"
+		}), interceptionContext, mountedSlotsHeader);
+	}
+};
+/**
+* App Router's useRouter — returns push/replace/back/forward/refresh.
+* Different from Pages Router's useRouter (next/router).
+*
+* Returns a stable singleton: the same object reference on every call,
+* matching Next.js behavior so components using referential equality
+* (e.g. useMemo / useEffect deps, React.memo) don't re-render unnecessarily.
+*/
+function useRouter() {
+	return _appRouter;
 }
 /**
 * useServerInsertedHTML — inject HTML during SSR from client components.
@@ -938,6 +1033,41 @@ function Children() {
 }
 function ParallelSlot({ name }) {
 	return import_react.useContext(ParallelSlotsContext)?.[name] ?? null;
+}
+//#endregion
+//#region node_modules/vinext/dist/server/request-pipeline.js
+/**
+* Returns true if a request pathname looks like a protocol-relative open
+* redirect, in either literal or percent-encoded form.
+*
+* Exported for call sites that need to replicate the guard inline (Pages
+* Router worker codegen, Node production server) and for defense-in-depth
+* checks inside redirect emitters.
+*
+* A pathname is considered "open redirect shaped" when its first segment,
+* after decoding backslashes and encoded delimiters, would cause a browser
+* to resolve a `Location` containing the pathname as protocol-relative:
+*
+*   - literal   `//evil.com`
+*   - literal   `/\evil.com`             (browsers normalize `\` to `/`)
+*   - encoded   `/%5Cevil.com`           (`%5C` decodes to `\` in Location)
+*   - encoded   `/%2F/evil.com`          (`%2F` decodes to `/` → `//`)
+*   - mixed     `/%5C%2F`, `/%5C%5C`     (and other combinations)
+*
+* We explicitly do not require a valid percent sequence elsewhere in the
+* pathname — we only examine the leading bytes (up to the second real or
+* encoded delimiter) so malformed suffixes can still reach the normal
+* "400 Bad Request" decode path instead of being masked as "404".
+*/
+function isOpenRedirectShaped(rawPathname) {
+	if (!rawPathname.startsWith("/")) return false;
+	const afterSlash = rawPathname.slice(1);
+	if (afterSlash.startsWith("/") || afterSlash.startsWith("\\")) return true;
+	if (afterSlash.length >= 3 && afterSlash[0] === "%") {
+		const encoded = afterSlash.slice(0, 3).toLowerCase();
+		if (encoded === "%5c" || encoded === "%2f") return true;
+	}
+	return false;
 }
 //#endregion
 //#region node_modules/vinext/dist/server/app-ssr-stream.js
@@ -10558,40 +10688,40 @@ function createServerReference(id) {
 //#region \0virtual:vite-rsc/client-references
 var client_references_default = {
 	"fca983fe7b7c": async () => {
-		return (await import("./assets/worker-entry-DgsKeUyo.js")).export_fca983fe7b7c;
+		return (await import("./assets/worker-entry-DpVO_niG.js")).export_fca983fe7b7c;
 	},
 	"061b9fa1e40a": async () => {
-		return (await import("./assets/worker-entry-DgsKeUyo.js")).export_061b9fa1e40a;
+		return (await import("./assets/worker-entry-DpVO_niG.js")).export_061b9fa1e40a;
 	},
 	"c237b91ab318": async () => {
-		return (await import("./assets/worker-entry-DgsKeUyo.js")).export_c237b91ab318;
+		return (await import("./assets/worker-entry-DpVO_niG.js")).export_c237b91ab318;
 	},
 	"e16c1c1133d5": async () => {
-		return (await import("./assets/worker-entry-DgsKeUyo.js")).export_e16c1c1133d5;
+		return (await import("./assets/worker-entry-DpVO_niG.js")).export_e16c1c1133d5;
 	},
 	"b49ea5cf04c0": async () => {
-		return (await import("./assets/worker-entry-DgsKeUyo.js")).export_b49ea5cf04c0;
+		return (await import("./assets/worker-entry-DpVO_niG.js")).export_b49ea5cf04c0;
 	},
 	"6efdf509a785": async () => {
-		return (await import("./assets/worker-entry-DgsKeUyo.js")).export_6efdf509a785;
+		return (await import("./assets/worker-entry-DpVO_niG.js")).export_6efdf509a785;
 	},
 	"b5f72a92d407": async () => {
-		return (await import("./assets/worker-entry-DgsKeUyo.js")).export_b5f72a92d407;
+		return (await import("./assets/worker-entry-DpVO_niG.js")).export_b5f72a92d407;
 	},
 	"fd66447d98ef": async () => {
-		return (await import("./assets/worker-entry-DgsKeUyo.js")).export_fd66447d98ef;
+		return (await import("./assets/worker-entry-DpVO_niG.js")).export_fd66447d98ef;
 	},
 	"a92b8f6cff96": async () => {
-		return (await import("./assets/worker-entry-DgsKeUyo.js")).export_a92b8f6cff96;
+		return (await import("./assets/worker-entry-DpVO_niG.js")).export_a92b8f6cff96;
 	},
 	"593f344dc510": async () => {
-		return (await import("./assets/worker-entry-DgsKeUyo.js")).export_593f344dc510;
+		return (await import("./assets/worker-entry-DpVO_niG.js")).export_593f344dc510;
 	},
 	"15c18cfaeeff": async () => {
-		return (await import("./assets/worker-entry-DgsKeUyo.js")).export_15c18cfaeeff;
+		return (await import("./assets/worker-entry-DpVO_niG.js")).export_15c18cfaeeff;
 	},
 	"8c0f216c4604": async () => {
-		return (await import("./assets/worker-entry-DgsKeUyo.js")).export_8c0f216c4604;
+		return (await import("./assets/worker-entry-DpVO_niG.js")).export_8c0f216c4604;
 	}
 };
 //#endregion
@@ -10726,11 +10856,11 @@ async function handleSsr(rscStream, navContext, fontData, options) {
 	});
 }
 var app_ssr_entry_default = { async fetch(request) {
-	if (new URL(request.url).pathname.startsWith("//")) return new Response("404 Not Found", { status: 404 });
+	if (isOpenRedirectShaped(new URL(request.url).pathname)) return new Response("404 Not Found", { status: 404 });
 	const result = await (await import("../index.js")).default(request);
 	if (result instanceof Response) return result;
 	if (result == null) return new Response("Not Found", { status: 404 });
 	return new Response(String(result), { status: 200 });
 } };
 //#endregion
-export { toBrowserNavigationHref as _, require_jsx_runtime as a, stripBasePath as b, getMountedSlotsHeader as c, prefetchRscResponse as d, app_ssr_entry_default as default, toRscUrl as f, resolveRelativeHref as g, notifyAppRouterTransitionStart as h, handleSsr, Slot as i, getPrefetchedUrls as l, ReadonlyURLSearchParams as m, Children as n, getCurrentInterceptionContext as o, usePathname as p, ParallelSlot as r, getLayoutSegmentContext as s, createServerReference as t, navigateClientSide as u, toSameOriginAppPath as v, createAppPayloadCacheKey as x, withBasePath as y };
+export { toBrowserNavigationHref as _, require_jsx_runtime as a, stripBasePath as b, getMountedSlotsHeader as c, prefetchRscResponse as d, app_ssr_entry_default as default, toRscUrl as f, resolveRelativeHref as g, useRouter as h, handleSsr, Slot as i, getPrefetchedUrls as l, usePathname as m, Children as n, getCurrentInterceptionContext as o, useParams as p, ParallelSlot as r, getLayoutSegmentContext as s, createServerReference as t, navigateClientSide as u, toSameOriginAppPath as v, createAppPayloadCacheKey as x, withBasePath as y };
