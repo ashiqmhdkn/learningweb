@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
-import Appshell from '../../components/Appshell';
+import Appshell from '@/app/components/Appshell';
 import { ParsedData, profileApi, Course, Subject, Unit } from '@/api/api';
 import { ChevronDown, ChevronRight, Video, FileText, Layers, ArrowLeft, BookOpen } from 'lucide-react';
 
