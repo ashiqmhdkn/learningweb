@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import AppShell from '@/app/components/Appshell';
+import AppShell from '@/app/components/AppShell';
 import { profileApi, ParsedData } from '@/api/api';
 import {
   BookOpen, Video, FileText, GraduationCap,

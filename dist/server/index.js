@@ -1261,7 +1261,7 @@ var NextURL = class NextURL {
 	* Matches the Next.js API: `request.nextUrl.buildId`.
 	*/
 	get buildId() {
-		return "f937431e-180d-4566-aac5-35e741203bd1";
+		return "a20d496b-9b87-4d20-8404-1dd8622fdd66";
 	}
 };
 var RequestCookies = class {
@@ -6234,7 +6234,7 @@ function __isrFnv1a64(s) {
 }
 function __isrCacheKey(pathname, suffix) {
 	const normalized = pathname === "/" ? "/" : pathname.replace(/\/$/, "");
-	const prefix = "app:f937431e-180d-4566-aac5-35e741203bd1";
+	const prefix = "app:a20d496b-9b87-4d20-8404-1dd8622fdd66";
 	const key = prefix + ":" + normalized + ":" + suffix;
 	if (key.length <= 200) return key;
 	return prefix + ":__hash:" + __isrFnv1a64(normalized) + ":" + suffix;
