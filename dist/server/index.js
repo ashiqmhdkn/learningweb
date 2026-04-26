@@ -1,4 +1,4 @@
-globalThis.__VINEXT_LAZY_CHUNKS__ = ["assets/query-BbOc3VB2.js","assets/router-C5uqvVNo.js","assets/worker-entry-DAJA3H4G.js"];
+globalThis.__VINEXT_LAZY_CHUNKS__ = ["assets/query-BbOc3VB2.js","assets/router-C5uqvVNo.js","assets/worker-entry-CQN_T7Ch.js"];
 import { a as renderToReadableStream$2, c as require_react_react_server, d as __toESM, l as __commonJSMin, n as decodeReply, o as loadServerAction, r as registerClientReference, s as setRequireModule, t as createTemporaryReferenceSet, u as __exportAll } from "./assets/encryption-runtime-DNIzdte6.js";
 import { AsyncLocalStorage } from "node:async_hooks";
 import assetsManifest from "./__vite_rsc_assets_manifest.js";
@@ -404,7 +404,7 @@ async function resolveStaticAssetSignal(signalResponse, options) {
 //#endregion
 //#region \0virtual:vite-rsc/server-references
 var server_references_default = { "c55148d2fa51": async () => {
-	const { loginApi, profileApi } = await import("./assets/api-DyA9Cqx8.js");
+	const { loginApi, profileApi } = await import("./assets/api-CApOOq60.js");
 	return {
 		loginApi,
 		profileApi
@@ -1261,7 +1261,7 @@ var NextURL = class NextURL {
 	* Matches the Next.js API: `request.nextUrl.buildId`.
 	*/
 	get buildId() {
-		return "cd66ca20-fa3a-407e-b340-de160800565a";
+		return "f937431e-180d-4566-aac5-35e741203bd1";
 	}
 };
 var RequestCookies = class {
@@ -6234,7 +6234,7 @@ function __isrFnv1a64(s) {
 }
 function __isrCacheKey(pathname, suffix) {
 	const normalized = pathname === "/" ? "/" : pathname.replace(/\/$/, "");
-	const prefix = "app:cd66ca20-fa3a-407e-b340-de160800565a";
+	const prefix = "app:f937431e-180d-4566-aac5-35e741203bd1";
 	const key = prefix + ":" + normalized + ":" + suffix;
 	if (key.length <= 200) return key;
 	return prefix + ":__hash:" + __isrFnv1a64(normalized) + ":" + suffix;
