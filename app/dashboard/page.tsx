@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import AppShell from '@/app/components/AppShell';
+import AppShell from '@/app/components/Appshell';
 import { profileApi, ParsedData } from '@/api/api';
 import {
   BookOpen, Video, FileText, GraduationCap,
@@ -57,7 +57,7 @@ export default function DashboardPage() {
 
   return (
     <AppShell>
-      <div className="p-6 lg:pt-10 max-w-7xl mx-auto">
+      <div className="p-6 lg:pt-10 w-full mx-auto">
         {/* Header */}
         <div className="mb-10 fade-up fade-up-1">
           <div className="flex items-start justify-between">
@@ -124,12 +124,12 @@ export default function DashboardPage() {
               <h2 className="font-display text-xl font-bold text-white">Your Batches</h2>
             </div>
 
-            <div className="grid sm:grid-cols-1 md:grid-cols-2 grid-cols-3 gap-6">
+            <div className="grid sm:grid-cols-1 md:grid-cols-3 xl:grid-cols-4 grid-cols-3 gap-6">
               {data.courses.map((course) => (
                 <Link
                 key={course.course_id}
                   href={`/courses/${course.course_id}`}
-                  className="rounded-2xl overflow-hidden p-16 card-hover block columns-3xs"
+                  className="rounded-2xl overflow-hidden p-16 card-hover block "
                   style={{ background: '#1C202E', border: '1px solid rgba(42,47,58,0.5)' }}
                 >
                   {/* Image */}
@@ -144,7 +144,6 @@ export default function DashboardPage() {
                     )}
                     <div className="absolute inset-0" style={{ background: 'linear-gradient(to top, rgba(28,32,46,1) 0%, transparent 60%)' }} />
                   </div>
-
                   {/* Content */}
                   <div className="p-4">
                     <h3 className="font-semibold text-white text-sm mb-1 truncate">{course.title}</h3>

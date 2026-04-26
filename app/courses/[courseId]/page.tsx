@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
-import AppShell from '../../components/AppShell';
+import AppShell from '../../components/Appshell';
 import { ParsedData, profileApi, Course, Subject, Unit } from '@/api/api';
 import { ChevronDown, ChevronRight, Video, FileText, Layers, ArrowLeft, BookOpen } from 'lucide-react';
 
@@ -67,7 +67,7 @@ export default function CoursePage() {
 
   return (
     <AppShell>
-      <div className="p-6 lg:p-10 max-w-4xl mx-auto">
+      <div className="p-6 lg:p-10 w-full mx-auto">
         {/* Back */}
         <Link href="/dashboard" className="inline-flex items-center gap-2 text-slate-soft hover:text-gold text-sm mb-6 transition-colors fade-up fade-up-1">
           <ArrowLeft size={15} /> All Courses
@@ -78,12 +78,11 @@ export default function CoursePage() {
           <center>{course.title}</center>
         </div>
         {/* YouTube Style Subjects Grid */}
-        <div className="fade-up fade-up-3">
+        <div className="fade-up fade-up-3 p-4">
           <h2 className="font-display text-xl font-bold text-white mb-6">
             Subjects
           </h2>
-        
-          <div className="grid grid-cols-3 sm:grid-cols-1 lg:grid-cols-4 xl:grid-cols-4 gap-6">
+          <div className="grid grid-cols-3 sm:grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 ">
             {subjects.map((subject) => {
               const units: Unit[] =
                 data?.units.filter((u) => u.subject_id === subject.subject_id) ?? [];
@@ -94,11 +93,12 @@ export default function CoursePage() {
                   href={`/subjects/${subject.subject_id}`}
                   className="group"
                 >
-                  <div className="bg-neutral-primary-soft block max-w-sm p-6  rounded-base shadow-xs">
-                    <center>
-                      <img className="rounded-base h-[360]" src={subject.subject_image} alt={subject.title} />
+                  <div className="bg-neutral-primary-soft block max-w-sm p-6 overflow-hidden rounded-2xl shadow-xs">
+                    <div className='overflow-hidden h-36 relative'>
+                      <img className="object-cover aspect-16/9 h-[300]" src={subject.subject_image} alt={subject.title} />
+                    </div>
                     <h5 className="mt-6 mb-2 text-2xl font-semibold tracking-tight text-heading">{subject.title}</h5>
-                    </center>
+                  
                   </div>
 
                 </Link>

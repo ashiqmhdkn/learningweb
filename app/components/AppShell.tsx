@@ -2,7 +2,7 @@
 
 import Navbar from './Navbar';
 
-export default function AppShell({
+export default function Appshell({
   children,
 }: {
   children: React.ReactNode;
@@ -16,7 +16,7 @@ export default function AppShell({
   </header>
 
   {/* Main content — mt-16 clears the fixed top navbar on desktop */}
-  <main className="flex-1 overflow-auto mt-[50]" style={{ marginTop: '50px' }}>
+  <main className="flex-1 overflow-auto" style={{ marginTop: '64px' }}>
   <div className="pt-4">{children}</div>
 </main>
 

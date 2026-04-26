@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
-import AppShell from '@/app/components/AppShell';
+import AppShell from '@/app/components/Appshell';
 import { ParsedData, profileApi, Unit, Video, Note } from '@/api/api';
 import { ArrowLeft, Video as VideoIcon, FileText, Download, Play, Clock } from 'lucide-react';
 
@@ -65,7 +65,7 @@ export default function SubjectPage() {
 
   return (
     <AppShell>
-      <div className="p-6 lg:p-10 max-w-7xl mx-auto">
+      <div className="p-6 lg:p-10 w-full mx-auto">
         {/* Back */}
         <Link 
           href={`/dashbroad`} 
@@ -78,7 +78,7 @@ export default function SubjectPage() {
             Subjects
           </h2>
         
-          <div className="grid grid-cols-3 sm:grid-cols-1 lg:grid-cols-4 xl:grid-cols-4 gap-6">
+          <div className="grid grid-cols-4 sm:grid-cols-2 lg:grid-cols-6 xl:grid-cols-8 gap-6">
             {units.map((unit) => {
               const units: Unit[] =
                 data?.units.filter((u) => u.subject_id === unit.subject_id) ?? [];
@@ -89,9 +89,11 @@ export default function SubjectPage() {
                   href={`/units/${unit.unit_id}`}
                   className="group"
                 >
-                  <div className="bg-neutral-primary-soft block max-w-sm p-6  rounded-base shadow-xs">
+                  <div className="bg-blue-500 block max-w-sm p-6  rounded-base shadow-xs">
                     <center>
-                      <img className="rounded-base h-[360]" src={unit.unit_image} alt={unit.title} />
+                      <div className='overflow-hidden h-36 relative'>
+                      <img className="object-cover squre h-[300]" src={unit.unit_image} alt={unit.title} />
+                    </div>
                     <h5 className="mt-6 mb-2 text-2xl font-semibold tracking-tight text-heading">{unit.title}</h5>
                     </center>
                   </div>

@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import AppShell from '../components/AppShell';
+import AppShell from '../components/Appshell';
 import { useAuth } from '@/api/auth-context';
 import { User as UserIcon, Mail, Phone, Calendar, Shield, BookOpen, Video, FileText } from 'lucide-react';
 import { ParsedData } from '@/api/api';
