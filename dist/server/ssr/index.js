@@ -10558,40 +10558,40 @@ function createServerReference(id) {
 //#region \0virtual:vite-rsc/client-references
 var client_references_default = {
 	"fca983fe7b7c": async () => {
-		return (await import("./assets/worker-entry-B_7VJNOY.js")).export_fca983fe7b7c;
+		return (await import("./assets/worker-entry-DZZ4e6SQ.js")).export_fca983fe7b7c;
 	},
 	"061b9fa1e40a": async () => {
-		return (await import("./assets/worker-entry-B_7VJNOY.js")).export_061b9fa1e40a;
+		return (await import("./assets/worker-entry-DZZ4e6SQ.js")).export_061b9fa1e40a;
 	},
 	"c237b91ab318": async () => {
-		return (await import("./assets/worker-entry-B_7VJNOY.js")).export_c237b91ab318;
+		return (await import("./assets/worker-entry-DZZ4e6SQ.js")).export_c237b91ab318;
 	},
 	"e16c1c1133d5": async () => {
-		return (await import("./assets/worker-entry-B_7VJNOY.js")).export_e16c1c1133d5;
+		return (await import("./assets/worker-entry-DZZ4e6SQ.js")).export_e16c1c1133d5;
 	},
 	"b49ea5cf04c0": async () => {
-		return (await import("./assets/worker-entry-B_7VJNOY.js")).export_b49ea5cf04c0;
+		return (await import("./assets/worker-entry-DZZ4e6SQ.js")).export_b49ea5cf04c0;
 	},
 	"6efdf509a785": async () => {
-		return (await import("./assets/worker-entry-B_7VJNOY.js")).export_6efdf509a785;
+		return (await import("./assets/worker-entry-DZZ4e6SQ.js")).export_6efdf509a785;
 	},
 	"b5f72a92d407": async () => {
-		return (await import("./assets/worker-entry-B_7VJNOY.js")).export_b5f72a92d407;
+		return (await import("./assets/worker-entry-DZZ4e6SQ.js")).export_b5f72a92d407;
 	},
 	"fd66447d98ef": async () => {
-		return (await import("./assets/worker-entry-B_7VJNOY.js")).export_fd66447d98ef;
+		return (await import("./assets/worker-entry-DZZ4e6SQ.js")).export_fd66447d98ef;
 	},
 	"a92b8f6cff96": async () => {
-		return (await import("./assets/worker-entry-B_7VJNOY.js")).export_a92b8f6cff96;
+		return (await import("./assets/worker-entry-DZZ4e6SQ.js")).export_a92b8f6cff96;
 	},
 	"593f344dc510": async () => {
-		return (await import("./assets/worker-entry-B_7VJNOY.js")).export_593f344dc510;
+		return (await import("./assets/worker-entry-DZZ4e6SQ.js")).export_593f344dc510;
 	},
 	"15c18cfaeeff": async () => {
-		return (await import("./assets/worker-entry-B_7VJNOY.js")).export_15c18cfaeeff;
+		return (await import("./assets/worker-entry-DZZ4e6SQ.js")).export_15c18cfaeeff;
 	},
 	"8c0f216c4604": async () => {
-		return (await import("./assets/worker-entry-B_7VJNOY.js")).export_8c0f216c4604;
+		return (await import("./assets/worker-entry-DZZ4e6SQ.js")).export_8c0f216c4604;
 	}
 };
 //#endregion
