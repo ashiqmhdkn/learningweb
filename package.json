@@ -4,13 +4,13 @@
   "private": true,
   "scripts": {
     "build": "vinext build",
-    "dev": "vinext dev",
+    "dev": "vite dev",
     "start": "vinext start",
     "lint": "eslint",
     "dev:vinext": "vinext dev --port 3001",
     "build:vinext": "vinext build",
     "start:vinext": "wrangler dev",
-    "deploy": "wrangler deploy"
+    "deploy": "vite build && wrangler deploy"
   },
   "dependencies": {
     "@cloudflare/vite-plugin": "^1.33.2",

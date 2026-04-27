@@ -1,6 +1,7 @@
 import type { NextConfig } from 'next'
 
 const nextConfig: NextConfig = {
+  allowedDevOrigins: ['https://api.crescentlearning.org', 'https://myapp.crescentlearning.org', 'http://localhost:3000', 'http://localhost:5173'],
   async headers() {
     return [
       {

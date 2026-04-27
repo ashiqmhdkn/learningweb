@@ -66,7 +66,7 @@ export default function UnitPage() {
       <AppShell>
         <div className="p-10 text-center">
           <p className="text-slate-soft">Unit not found</p>
-          <Link href={`/courses/${courseId}`} className="text-gold text-sm mt-3 inline-flex items-center gap-1">
+          <Link href={`/dashboard`} className="text-gold text-sm mt-3 inline-flex items-center gap-1">
             <ArrowLeft size={14} /> Back to course
           </Link>
         </div>
@@ -79,7 +79,7 @@ export default function UnitPage() {
       <div className="p-6 lg:p-10 max-w-7xl mx-auto">
         {/* Back */}
         <Link 
-          href={`/courses/${courseId}`} 
+          href={`/dashboard`} 
           className="inline-flex items-center gap-2 text-slate-soft hover:text-gold text-sm mb-6 transition-colors fade-up fade-up-1"
         >
           <ArrowLeft size={15} /> Back to Course

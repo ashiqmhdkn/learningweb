@@ -146,7 +146,7 @@ function hashPasswordWithSalt(
     .update(combined, 'utf8')
     .digest('hex');
 }
-const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
+const baseUrl = process.env.NEXT_PUBLIC_BASE_URL||'https://api.crescentlearning.org'; ;
 export async function loginApi(
   email: string,
   password: string
@@ -155,7 +155,7 @@ export async function loginApi(
   password,
   "y6SsdIR"
 );
-  const res = await fetch(`${baseUrl}/api/login`, {
+  const res = await fetch(`${baseUrl}/login`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -165,7 +165,7 @@ export async function loginApi(
   });
 
   const body = await res.json().catch(() => ({}));
-
+  console.log("loginApi response: ", body);
   if (!res.ok) {
     throw new Error(body.message || `Login failed (${res.status})`);
   }
@@ -178,7 +178,7 @@ export async function loginApi(
 export async function profileApi(
   token: string
 ): Promise<ParsedData> {
-  const res = await fetch(`${baseUrl}/api/profile`, {
+  const res = await fetch(`${baseUrl}/profile`, {
     method: 'GET',
     headers: {
       Accept: 'application/json',
@@ -195,6 +195,7 @@ export async function profileApi(
   }
 
   const body = await res.json();
+  console.log("profileApi response: ", body);
 
   const data: ProfileData = body.data ?? body;
 
