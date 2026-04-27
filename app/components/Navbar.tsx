@@ -29,7 +29,7 @@ export default function Navbar() {
 
   return (
     <nav className=" shadow-lg border-b h-16 md:border-t-0 md:border-b border-white-200 fixed w-full z-50 bottom-0 md:top-0 md:bottom-auto">
-      <div className="max-w-7xl mx-auto px-4">
+      <div className="w-full mx-auto px-4">
         <div className="flex justify-between items-center h-16">
           <div className=" md:flex items-center">
             <span className="font-bold text-xl">Crescent</span>

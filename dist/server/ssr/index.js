@@ -429,7 +429,6 @@ function syncCommittedUrlStateFromLocation() {
 	}
 	return changed;
 }
-var _EMPTY_PARAMS = {};
 var _CLIENT_NAV_RENDER_CTX_KEY = Symbol.for("vinext.clientNavigationRenderContext");
 function getClientNavigationRenderContext() {
 	if (typeof import_react.createContext !== "function") return null;
@@ -445,12 +444,6 @@ function useClientNavigationRenderSnapshot() {
 	} catch {
 		return null;
 	}
-}
-function getClientParamsSnapshot() {
-	return getClientNavigationState()?.clientParams ?? _EMPTY_PARAMS;
-}
-function getServerParamsSnapshot() {
-	return _getServerContext()?.params ?? _EMPTY_PARAMS;
 }
 function subscribeToNavigation(cb) {
 	const state = getClientNavigationState();
@@ -470,16 +463,6 @@ function usePathname() {
 	const pathname = import_react.useSyncExternalStore(subscribeToNavigation, getPathnameSnapshot, () => _getServerContext()?.pathname ?? "/");
 	if (renderSnapshot && (getClientNavigationState()?.navigationSnapshotActiveCount ?? 0) > 0) return renderSnapshot.pathname;
 	return pathname;
-}
-/**
-* Returns the dynamic params for the current route.
-*/
-function useParams() {
-	if (isServer) return _getServerContext()?.params ?? _EMPTY_PARAMS;
-	const renderSnapshot = useClientNavigationRenderSnapshot();
-	const params = import_react.useSyncExternalStore(subscribeToNavigation, getClientParamsSnapshot, getServerParamsSnapshot);
-	if (renderSnapshot && (getClientNavigationState()?.navigationSnapshotActiveCount ?? 0) > 0) return renderSnapshot.params;
-	return params;
 }
 /**
 * Check if a href is an external URL (any URL scheme per RFC 3986, or protocol-relative).
@@ -640,67 +623,6 @@ async function navigateClientSide(href, mode, scroll, programmaticTransition = f
 	}
 	if (scroll) if (hash) scrollToHash(hash);
 	else window.scrollTo(0, 0);
-}
-var _appRouter = {
-	push(href, options) {
-		if (isServer) return;
-		import_react.startTransition(() => {
-			navigateClientSide(href, "push", options?.scroll !== false, true);
-		});
-	},
-	replace(href, options) {
-		if (isServer) return;
-		import_react.startTransition(() => {
-			navigateClientSide(href, "replace", options?.scroll !== false, true);
-		});
-	},
-	back() {
-		if (isServer) return;
-		window.history.back();
-	},
-	forward() {
-		if (isServer) return;
-		window.history.forward();
-	},
-	refresh() {
-		if (isServer) return;
-		const rscNavigate = window.__VINEXT_RSC_NAVIGATE__;
-		if (typeof rscNavigate === "function") {
-			const navigate = () => {
-				rscNavigate(window.location.href, 0, "refresh", void 0, void 0, true);
-			};
-			import_react.startTransition(navigate);
-		}
-	},
-	prefetch(href) {
-		if (isServer) return;
-		const rscUrl = toRscUrl(toBrowserNavigationHref(href, window.location.href, ""));
-		const interceptionContext = getCurrentInterceptionContext();
-		const cacheKey = createAppPayloadCacheKey(rscUrl, interceptionContext);
-		const prefetched = getPrefetchedUrls();
-		if (prefetched.has(cacheKey)) return;
-		prefetched.add(cacheKey);
-		const mountedSlotsHeader = getMountedSlotsHeader();
-		const headers = new Headers({ Accept: "text/x-component" });
-		if (mountedSlotsHeader) headers.set("X-Vinext-Mounted-Slots", mountedSlotsHeader);
-		if (interceptionContext !== null) headers.set("X-Vinext-Interception-Context", interceptionContext);
-		prefetchRscResponse(rscUrl, fetch(rscUrl, {
-			headers,
-			credentials: "include",
-			priority: "low"
-		}), interceptionContext, mountedSlotsHeader);
-	}
-};
-/**
-* App Router's useRouter — returns push/replace/back/forward/refresh.
-* Different from Pages Router's useRouter (next/router).
-*
-* Returns a stable singleton: the same object reference on every call,
-* matching Next.js behavior so components using referential equality
-* (e.g. useMemo / useEffect deps, React.memo) don't re-render unnecessarily.
-*/
-function useRouter() {
-	return _appRouter;
 }
 /**
 * useServerInsertedHTML — inject HTML during SSR from client components.
@@ -10688,40 +10610,40 @@ function createServerReference(id) {
 //#region \0virtual:vite-rsc/client-references
 var client_references_default = {
 	"fca983fe7b7c": async () => {
-		return (await import("./assets/worker-entry-DpVO_niG.js")).export_fca983fe7b7c;
+		return (await import("./assets/worker-entry-Bqj0i81g.js")).export_fca983fe7b7c;
 	},
 	"061b9fa1e40a": async () => {
-		return (await import("./assets/worker-entry-DpVO_niG.js")).export_061b9fa1e40a;
+		return (await import("./assets/worker-entry-Bqj0i81g.js")).export_061b9fa1e40a;
 	},
 	"c237b91ab318": async () => {
-		return (await import("./assets/worker-entry-DpVO_niG.js")).export_c237b91ab318;
+		return (await import("./assets/worker-entry-Bqj0i81g.js")).export_c237b91ab318;
 	},
 	"e16c1c1133d5": async () => {
-		return (await import("./assets/worker-entry-DpVO_niG.js")).export_e16c1c1133d5;
+		return (await import("./assets/worker-entry-Bqj0i81g.js")).export_e16c1c1133d5;
 	},
 	"b49ea5cf04c0": async () => {
-		return (await import("./assets/worker-entry-DpVO_niG.js")).export_b49ea5cf04c0;
+		return (await import("./assets/worker-entry-Bqj0i81g.js")).export_b49ea5cf04c0;
 	},
 	"6efdf509a785": async () => {
-		return (await import("./assets/worker-entry-DpVO_niG.js")).export_6efdf509a785;
+		return (await import("./assets/worker-entry-Bqj0i81g.js")).export_6efdf509a785;
 	},
 	"b5f72a92d407": async () => {
-		return (await import("./assets/worker-entry-DpVO_niG.js")).export_b5f72a92d407;
+		return (await import("./assets/worker-entry-Bqj0i81g.js")).export_b5f72a92d407;
 	},
 	"fd66447d98ef": async () => {
-		return (await import("./assets/worker-entry-DpVO_niG.js")).export_fd66447d98ef;
+		return (await import("./assets/worker-entry-Bqj0i81g.js")).export_fd66447d98ef;
 	},
 	"a92b8f6cff96": async () => {
-		return (await import("./assets/worker-entry-DpVO_niG.js")).export_a92b8f6cff96;
+		return (await import("./assets/worker-entry-Bqj0i81g.js")).export_a92b8f6cff96;
 	},
 	"593f344dc510": async () => {
-		return (await import("./assets/worker-entry-DpVO_niG.js")).export_593f344dc510;
+		return (await import("./assets/worker-entry-Bqj0i81g.js")).export_593f344dc510;
 	},
 	"15c18cfaeeff": async () => {
-		return (await import("./assets/worker-entry-DpVO_niG.js")).export_15c18cfaeeff;
+		return (await import("./assets/worker-entry-Bqj0i81g.js")).export_15c18cfaeeff;
 	},
 	"8c0f216c4604": async () => {
-		return (await import("./assets/worker-entry-DpVO_niG.js")).export_8c0f216c4604;
+		return (await import("./assets/worker-entry-Bqj0i81g.js")).export_8c0f216c4604;
 	}
 };
 //#endregion
@@ -10863,4 +10785,4 @@ var app_ssr_entry_default = { async fetch(request) {
 	return new Response(String(result), { status: 200 });
 } };
 //#endregion
-export { toBrowserNavigationHref as _, require_jsx_runtime as a, stripBasePath as b, getMountedSlotsHeader as c, prefetchRscResponse as d, app_ssr_entry_default as default, toRscUrl as f, resolveRelativeHref as g, useRouter as h, handleSsr, Slot as i, getPrefetchedUrls as l, usePathname as m, Children as n, getCurrentInterceptionContext as o, useParams as p, ParallelSlot as r, getLayoutSegmentContext as s, createServerReference as t, navigateClientSide as u, toSameOriginAppPath as v, createAppPayloadCacheKey as x, withBasePath as y };
+export { toBrowserNavigationHref as _, require_jsx_runtime as a, stripBasePath as b, getMountedSlotsHeader as c, prefetchRscResponse as d, app_ssr_entry_default as default, toRscUrl as f, resolveRelativeHref as g, notifyAppRouterTransitionStart as h, handleSsr, Slot as i, getPrefetchedUrls as l, ReadonlyURLSearchParams as m, Children as n, getCurrentInterceptionContext as o, usePathname as p, ParallelSlot as r, getLayoutSegmentContext as s, createServerReference as t, navigateClientSide as u, toSameOriginAppPath as v, createAppPayloadCacheKey as x, withBasePath as y };

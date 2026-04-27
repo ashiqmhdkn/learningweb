@@ -1,4 +1,4 @@
-globalThis.__VINEXT_LAZY_CHUNKS__ = ["assets/query-BbOc3VB2.js","assets/router-Ds3V4D5g.js","assets/worker-entry-B6Cu6NJh.js"];
+globalThis.__VINEXT_LAZY_CHUNKS__ = ["assets/query-BbOc3VB2.js","assets/router-Ds3V4D5g.js","assets/worker-entry-Bvq-8f-X.js"];
 import { a as renderToReadableStream$2, c as require_react_react_server, d as __toESM, l as __commonJSMin, n as decodeReply, o as loadServerAction, r as registerClientReference, s as setRequireModule, t as createTemporaryReferenceSet, u as __exportAll } from "./assets/encryption-runtime-DNIzdte6.js";
 import { AsyncLocalStorage } from "node:async_hooks";
 import assetsManifest from "./__vite_rsc_assets_manifest.js";
@@ -684,7 +684,7 @@ async function resolveStaticAssetSignal(signalResponse, options) {
 //#endregion
 //#region \0virtual:vite-rsc/server-references
 var server_references_default = { "c55148d2fa51": async () => {
-	const { loginApi, profileApi } = await import("./assets/api-CApOOq60.js");
+	const { loginApi, profileApi } = await import("./assets/api-C3im0tNV.js");
 	return {
 		loginApi,
 		profileApi
@@ -1534,7 +1534,7 @@ var NextURL = class NextURL {
 	* Matches the Next.js API: `request.nextUrl.buildId`.
 	*/
 	get buildId() {
-		return "ec638ae0-f716-4827-a154-af1cc3e7ee11";
+		return "745439ce-1e73-49a0-8bca-b227273cc1fc";
 	}
 };
 var RequestCookies = class {
@@ -6152,7 +6152,7 @@ async function POST(req) {
 		body: JSON.stringify(body)
 	});
 	const data = await res.json();
-	console.log("route.ts - Login response: " + data);
+	console.log("route.ts - Login response: ", data);
 	return NextResponse.json(data, { status: res.status });
 }
 //#endregion
@@ -6166,7 +6166,7 @@ async function GET(req) {
 		Authorization: token
 	} });
 	const data = await res.json();
-	console.log("route.ts - Profile response: " + data);
+	console.log("route.ts - Profile response: ", data);
 	return NextResponse.json(data, { status: res.status });
 }
 //#endregion
@@ -6303,7 +6303,7 @@ function __isrFnv1a64(s) {
 }
 function __isrCacheKey(pathname, suffix) {
 	const normalized = pathname === "/" ? "/" : pathname.replace(/\/$/, "");
-	const prefix = "app:ec638ae0-f716-4827-a154-af1cc3e7ee11";
+	const prefix = "app:745439ce-1e73-49a0-8bca-b227273cc1fc";
 	const key = prefix + ":" + normalized + ":" + suffix;
 	if (key.length <= 200) return key;
 	return prefix + ":__hash:" + __isrFnv1a64(normalized) + ":" + suffix;
@@ -6365,16 +6365,6 @@ function createRscOnErrorHandler(request, pathname, routePath) {
 }
 function __VINEXT_CLASS(routeIdx) { return ((routeIdx) => {
     switch (routeIdx) {
-      case 0: return new Map([[0, "static"]]);
-      case 1: return new Map([[0, "static"]]);
-      case 2: return new Map([[0, "static"]]);
-      case 3: return new Map([[0, "static"]]);
-      case 4: return new Map([[0, "static"]]);
-      case 5: return new Map([[0, "static"]]);
-      case 6: return new Map([[0, "static"]]);
-      case 7: return new Map([[0, "static"]]);
-      case 8: return new Map([[0, "static"]]);
-      case 9: return new Map([[0, "static"]]);
       default: return null;
     }
   })(routeIdx); }

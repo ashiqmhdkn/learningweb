@@ -10,7 +10,7 @@
     "dev:vinext": "vinext dev --port 3001",
     "build:vinext": "vinext build",
     "start:vinext": "wrangler dev",
-    "deploy": "vite build && wrangler deploy"
+    "deploy": " wrangler deploy"
   },
   "dependencies": {
     "@cloudflare/vite-plugin": "^1.33.2",
@@ -28,8 +28,8 @@
     "@vitejs/plugin-react": "^6.0.1",
     "@vitejs/plugin-rsc": "^0.5.24",
     "esbuild": "^0.28.0",
-    "eslint": "^9",
-    "eslint-config-next": "16.2.4",
+    "eslint": "^9.39.4",
+    "eslint-config-next": "^16.2.4",
     "react-server-dom-webpack": "^19.2.5",
     "tailwindcss": "^4",
     "typescript": "^5",

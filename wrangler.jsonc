@@ -3,13 +3,12 @@
    "main": "./worker/index.ts", 
   "name": "learningweb",
   "compatibility_date": "2026-04-22",
+  "assets": {
+    "directory": "./dist/client"
+  },
   "compatibility_flags": [
     "nodejs_compat"
   ],
-  "assets": {
-    "directory": ".open-next/assets",
-    "binding": "ASSETS"
-  },
   "services": [
     {
       "binding": "WORKER_SELF_REFERENCE",
