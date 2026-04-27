@@ -1,6 +1,6 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
-   "main": "./worker/index.ts", 
+  "main": "vinext/server/app-router-entry",
   "name": "learningweb",
   "compatibility_date": "2026-04-22",
   "assets": {

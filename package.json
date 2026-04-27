@@ -10,7 +10,7 @@
     "dev:vinext": "vinext dev --port 3001",
     "build:vinext": "vinext build",
     "start:vinext": "wrangler dev",
-    "deploy": " wrangler deploy"
+    "deploy": "npm run build && wrangler deploy --config dist/server/wrangler.json dist/server/index.js"
   },
   "dependencies": {
     "@cloudflare/vite-plugin": "^1.33.2",
