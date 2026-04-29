@@ -3,14 +3,7 @@
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useAuth } from "@/api/auth-context";
-import {
-  Moon,
-  LayoutDashboard,
-  BookOpen,
-  User,
-  LogOut,
-  GraduationCap,
-} from "lucide-react";
+import { LayoutDashboard, BookOpen, LogOut } from "lucide-react";
 
 const navItems = [
   { href: "/dashboard", icon: LayoutDashboard, label: "Dashboard" },
@@ -20,7 +13,7 @@ const navItems = [
 export default function Navbar() {
   const pathname = usePathname();
   const router = useRouter();
-  const { user, logout } = useAuth();
+  const { logout } = useAuth();
 
   const handleLogout = () => {
     logout();
@@ -28,34 +21,46 @@ export default function Navbar() {
   };
 
   return (
-    <nav className=" shadow-lg border-b h-16 md:border-t-0 md:border-b border-white-200 fixed w-full z-50 bottom-0 md:top-0 md:bottom-auto">
-      <div className="w-full mx-auto px-4">
-        <div className="flex justify-between items-center h-16">
-          <div className=" md:flex items-center">
-            <span className="font-bold text-xl">Crescent</span>
+    <nav className="fixed top-0 w-full z-50  border-b border-white/10 shadow-md" style={{ background: 'rgba(108, 75, 240, 0.95)' }} >
+      <div className="max-w-7xl mx-auto px-4">
+        <div className="flex items-center justify-between h-16">
+
+          {/* Logo */}
+          <div className="text-xl font-bold text-white">
+            Crescent
           </div>
-          <div className="flex w-full md:w-auto gap-4 justify-around md:justify-end md:space-x-4">
+
+          {/* Nav Items */}
+          <div className="flex items-center gap-6">
+
             {navItems.map(({ href, icon: Icon, label }) => {
               const active =
                 pathname === href || pathname.startsWith(href + "/");
 
               return (
-                <div key={href}>
-                <a href={href}
-                  className="flex flex-col md:flex-row items-center text-gray-700 hover:text-blue-600 py-2 md:py-0"
+                <Link
+                  key={href}
+                  href={href}
+                  className={`flex items-center gap-2 text-sm transition ${active
+                    ? "text-gray-900"
+                    : "text-gray-300 hover:text-blue-400"
+                    }`}
                 >
-                  <span className="md:hidden">
-                    <Icon size={16} />
-                  </span>
-                  <span className="text-xs md:text-sm">{label}</span>
-                </a>
-              </div>  
+                  <Icon size={16} />
+                  <span className="hidden md:inline">{label}</span>
+                </Link>
               );
             })}
-            <button onClick={handleLogout}>
+
+            {/* Logout */}
+            <button
+              onClick={handleLogout}
+              className="flex items-center gap-2 text-sm text-gray-300 hover:text-red-400 transition"
+            >
               <LogOut size={16} />
-              Sign Out
+              <span className="hidden md:inline">Sign Out</span>
             </button>
+
           </div>
         </div>
       </div>

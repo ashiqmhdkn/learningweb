@@ -5,8 +5,8 @@ import { NextResponse } from 'next/server';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/api/auth-context';
 import { loginApi, profileApi } from '@/api/api';
-import { Eye, EyeOff, Moon, Star } from 'lucide-react';
-
+import { Eye, EyeOff } from 'lucide-react';
+import Image from 'next/image';
 export default function LoginPage() {
   const [identifier, setIdentifier] = useState('');
   const [password, setPassword] = useState('');
@@ -22,13 +22,13 @@ export default function LoginPage() {
     setLoading(true);
 
     try {
-      const { token} = await loginApi(identifier, password);
+      const { token } = await loginApi(identifier, password);
       console.log('Login successful with token:', token);
       // pre-fetch and cache profile data
       try {
         const data = await profileApi(token);
         console.log('Profile data fetched on login:', data);
-        setAuth(token,data.user);
+        setAuth(token, data.user);
         localStorage.setItem('cl_data', JSON.stringify(data));
       } catch (_) {
         // non-fatal
@@ -44,69 +44,41 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center relative overflow-hidden">
-      {/* Background layers */}
-      <div className="absolute inset-0 bg-radial-gold" />
-      <div className="absolute inset-0 grid-bg opacity-60" />
-
-      {/* Floating orbs */}
-      <div
-        className="absolute top-1/4 left-1/4 w-72 h-72 rounded-full opacity-10"
-        style={{
-          background: 'radial-gradient(circle, #C9A84C 0%, transparent 70%)',
-          filter: 'blur(60px)',
-        }}
-      />
-      <div
-        className="absolute bottom-1/3 right-1/4 w-96 h-96 rounded-full opacity-8"
-        style={{
-          background: 'radial-gradient(circle, #4A6B8A 0%, transparent 70%)',
-          filter: 'blur(80px)',
-        }}
-      />
-
-      {/* Decorative stars */}
-      {[...Array(6)].map((_, i) => (
-        <div
-          key={i}
-          className="absolute opacity-20"
-          style={{
-            top: `${15 + i * 13}%`,
-            left: `${8 + i * 15}%`,
-            animation: `fadeIn ${1 + i * 0.3}s ease forwards`,
-          }}
-        >
-          <Star size={i % 2 === 0 ? 8 : 5} color="#C9A84C" fill="#C9A84C" />
-        </div>
-      ))}
-
+    <div className="min-h-screen flex items-center justify-center relative overflow-hidden" style={{ background: '#f7f8ab' }}>
       {/* Card */}
       <div
         className="relative z-10 w-full max-w-md mx-4 fade-up"
         style={{
-          background: 'linear-gradient(145deg, rgba(26,29,35,0.95) 0%, rgba(19,22,32,0.98) 100%)',
-          border: '1px solid rgba(201,168,76,0.15)',
-          borderRadius: '20px',
+          background: 'linear-gradient(145deg, rgba(20, 62, 154, 0.95) 90%, rgba(239, 240, 245, 0.98) 100%)',
+          border: '1px solid rgb(254, 254, 254)',
+          borderRadius: '30px',
           padding: '48px 40px',
-          backdropFilter: 'blur(20px)',
+
         }}
       >
         {/* Logo area */}
-        <div className="text-center mb-10">
-          <div className="inline-flex items-center justify-center w-16 h-16 mb-5 crescent-ring" style={{ background: 'rgba(201,168,76,0.08)' }}>
-            <Moon size={26} color="#C9A84C" />
+        <div className="text-center space-y-5">
+          <div className="flex justify-center ">
+            <Image
+              src="/logo.png"
+              alt="Crescent Learning Logo"
+              width={64}
+              height={64}
+              className="rounded-lg"
+            />
           </div>
-          <h1 className="font-display text-3xl font-bold text-white mb-1 tracking-tight">
+
+          <h1 className="font-display text-3xl font-bold text-white tracking-tight " style={{ marginBottom: '16px' }}>
             Crescent Learning
           </h1>
-          <p className="text-slate-soft text-sm">Sign in to continue your journey</p>
+
         </div>
 
         {/* Form */}
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label className="block text-xs font-medium text-slate-soft mb-2 uppercase tracking-wider">
-              Email or Username
+              Email
             </label>
             <input
               type="text"
@@ -175,6 +147,6 @@ export default function LoginPage() {
           © 2025 Crescent Learning. All rights reserved.
         </p>
       </div>
-    </div>
+    </div >
   );
 }
