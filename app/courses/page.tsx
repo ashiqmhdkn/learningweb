@@ -72,7 +72,7 @@ export default function CoursesPage() {
   useEffect(() => {
     const cached = localStorage.getItem('cl_data');
     if (cached) {
-      try { setData(JSON.parse(cached)); setLoading(false); return; } catch (_) {}
+      try { setData(JSON.parse(cached)); setLoading(false); return; } catch (_) { }
     }
     const token = localStorage.getItem('cl_token');
     if (!token) { router.push('/login'); return; }
@@ -94,8 +94,7 @@ export default function CoursesPage() {
     <AppShell>
       <div
         style={{
-          minHeight: '100vh',
-          background: '#0f1117',
+          minHeight: '1vh',
           fontFamily: "'DM Sans', 'Helvetica Neue', sans-serif",
           color: '#e8eaf0',
         }}
@@ -106,10 +105,9 @@ export default function CoursesPage() {
             position: 'sticky',
             top: 0,
             zIndex: 50,
-            background: 'rgba(15,17,23,0.92)',
             backdropFilter: 'blur(12px)',
             borderBottom: '1px solid rgba(255,255,255,0.06)',
-            padding: '14px 24px',
+            padding: '0px 24px',
             display: 'flex',
             alignItems: 'center',
             gap: 16,
@@ -227,7 +225,7 @@ export default function CoursesPage() {
                     bg={bg}
                     delay={Math.min(i * 40, 240)}
                   />
-           
+
                 );
               })}
             </div>

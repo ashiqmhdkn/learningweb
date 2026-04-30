@@ -22,7 +22,7 @@ export default function Navbar() {
 
   return (
     <nav className="fixed top-0 w-full z-50  border-b border-white/10 shadow-md" style={{ background: 'rgba(108, 75, 240, 0.95)' }} >
-      <div className="max-w-7xl mx-auto px-4">
+      <div className="max-w-10xl mx-auto px-4">
         <div className="flex items-center justify-between h-16">
 
           {/* Logo */}

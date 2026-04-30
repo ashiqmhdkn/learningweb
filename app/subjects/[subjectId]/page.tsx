@@ -17,20 +17,20 @@ export default function SubjectPage() {
   useEffect(() => {
     const cached = localStorage.getItem('cl_data');
     if (cached) {
-      try { 
+      try {
         const d = JSON.parse(cached);
         setData(d);
         // Auto-select first video
         const u = d.units.find((un: Unit) => un.subject_id === subjectId);
         setLoading(false);
         return;
-      } catch (_) {}
+      } catch (_) { }
     }
     const token = localStorage.getItem('cl_token');
     if (!token) { router.push('/login'); return; }
     profileApi(token)
-      .then((d) => { 
-        localStorage.setItem('cl_data', JSON.stringify(d)); 
+      .then((d) => {
+        localStorage.setItem('cl_data', JSON.stringify(d));
         setData(d);
         const u = d.units.find((un) => un.subject_id === subjectId);
       })
@@ -38,7 +38,7 @@ export default function SubjectPage() {
       .finally(() => setLoading(false));
   }, [router, subjectId]);
 
-  const units: Unit []| undefined = data?.units.filter((u) => u.subject_id === subjectId)??[];
+  const units: Unit[] | undefined = data?.units.filter((u) => u.subject_id === subjectId) ?? [];
 
   if (loading) {
     return (
@@ -65,46 +65,69 @@ export default function SubjectPage() {
 
   return (
     <AppShell>
-      <div className="p-6 lg:p-10 w-full mx-auto">
-        {/* Back */}
-        <Link 
-          href={`/dashboard`} 
-          className="inline-flex items-center gap-2 text-slate-soft hover:text-gold text-sm mb-6 transition-colors fade-up fade-up-1"
-        >
-          <ArrowLeft size={15} /> Back to home
-        </Link>
-        <div className="fade-up fade-up-3">
-          <h2 className="font-display text-xl font-bold text-white mb-6">
-            Subjects
-          </h2>
-        
-          <div className="grid grid-cols-4 sm:grid-cols-2 lg:grid-cols-6 xl:grid-cols-8 gap-6">
-            {units.map((unit) => {
-              const units: Unit[] =
-                data?.units.filter((u) => u.subject_id === unit.subject_id) ?? [];
+      <div className="p-6 lg:pt-0 w-full mx-auto">
 
-              return (
-                <Link
-                  key={unit.unit_id}
-                  href={`/units/${unit.unit_id}`}
-                  className="group"
-                >
-                  <div className="bg-blue-500 block max-w-sm p-6  rounded-base shadow-xs">
-                    <center>
-                      <div className='overflow-hidden h-36 relative'>
-                      <img className="object-cover squre h-[300]" src={unit.unit_image} alt={unit.title} />
-                    </div>
-                    <h5 className="mt-6 mb-2 text-2xl font-semibold tracking-tight text-heading">{unit.title}</h5>
-                    </center>
-                  </div>
+        {/* Header (same pattern as Course page) */}
+        <div className="mb-10">
+          <div className="flex items-center gap-3">
 
-                </Link>
-              );
-            })}
+            <Link
+              href="/dashboard"
+              className="p-2 rounded-lg border border-gray-700 text-gray-400 hover:text-yellow-400 transition"
+            >
+              <ArrowLeft size={16} />
+            </Link>
+
+            <div>
+              <h1 className="text-2xl lg:text-4xl font-bold text-white">
+                Units
+              </h1>
+              <p className="text-gray-400 mt-1 text-sm">
+                {units.length} units available
+              </p>
+            </div>
+
           </div>
         </div>
 
-            </div>
+        {/* Units Grid (same card system as subjects) */}
+        <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-6">
+          {units.map((unit) => (
+            <Link
+              key={unit.unit_id}
+              href={`/units/${unit.unit_id}`}
+              className="rounded-2xl overflow-hidden bg-gray-800 border border-gray-700 hover:shadow-lg transition block"
+            >
+
+              {/* Image */}
+              <div className="h-40 relative overflow-hidden">
+                {unit.unit_image ? (
+                  <img
+                    src={unit.unit_image}
+                    alt={unit.title}
+                    className="w-full h-full object-cover opacity-80"
+                  />
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center">
+                    <VideoIcon size={32} className="text-gray-500" />
+                  </div>
+                )}
+                <div className="absolute inset-0 bg-gradient-to-t from-gray-900 to-transparent" />
+              </div>
+
+              {/* Content */}
+              <div className="p-4">
+                <h3 className="font-semibold text-white text-sm truncate">
+                  {unit.title}
+                </h3>
+
+              </div>
+
+            </Link>
+          ))}
+        </div>
+
+      </div>
     </AppShell>
   );
 }

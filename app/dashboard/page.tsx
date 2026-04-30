@@ -57,7 +57,7 @@ export default function DashboardPage() {
 
   return (
     <AppShell>
-      <div className="p-6 lg:pt-10 w-full mx-auto">
+      <div className="p-6 lg:pt-2 w-full mx-auto">
 
         {/* Header */}
         <div className="mb-10">
@@ -105,8 +105,8 @@ export default function DashboardPage() {
                 key={label}
                 className="rounded-2xl p-5  border border-gray-700 hover:shadow-lg transition" style={{ background: 'rgba(227, 225, 225, 0.05)' }}
               >
-                <div className="flex items-center justify-between mb-4">
-                  <div className="w-9 h-9 rounded-xl flex items-center justify-center bg-gray-700">
+                <div className="flex items-center justify-between mb-2">
+                  <div className="w-9 h-10 rounded-xl flex items-center justify-center bg-gray-700">
                     <Icon size={18} color={color} />
                   </div>
                   <span className="text-xs px-2 py-1 rounded-full bg-yellow-500/10 text-yellow-400 border border-yellow-500/20">
@@ -134,19 +134,19 @@ export default function DashboardPage() {
                   className="rounded-2xl overflow-hidden bg-gray-800 border border-gray-700 hover:shadow-lg transition block"
                 >
                   {/* Image */}
-                  <div className="h-36 relative overflow-hidden bg-gray-900">
+                  <div className="h-66 relative overflow-hidden bg-gray-00">
                     {course.course_image ? (
                       <img
                         src={course.course_image}
                         alt={course.title}
-                        className="w-full h-full object-cover opacity-80"
+                        className="w-full h-full object-fit opacity-80"
                       />
                     ) : (
                       <div className="w-full h-full flex items-center justify-center">
                         <GraduationCap size={36} className="text-gray-500" />
                       </div>
                     )}
-                    <div className="absolute inset-0 bg-gradient-to-t from-gray-900 to-transparent" />
+                    <div className="absolute inset-0 " />
                   </div>
 
                   {/* Content */}
@@ -154,9 +154,7 @@ export default function DashboardPage() {
                     <h3 className="font-semibold text-white text-sm mb-1 truncate">
                       {course.title}
                     </h3>
-                    <div className="flex items-center justify-between text-sm text-gray-400">
-                      Explore <ChevronRight size={14} />
-                    </div>
+
                   </div>
                 </Link>
               ))}

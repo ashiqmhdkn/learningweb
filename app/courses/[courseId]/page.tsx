@@ -67,44 +67,75 @@ export default function CoursePage() {
 
   return (
     <AppShell>
-      <div className="p-6 lg:p-10 w-full mx-auto">
-        {/* Back */}
-        <Link href="/dashboard" className="inline-flex items-center gap-2 text-slate-soft hover:text-gold text-sm mb-6 transition-colors fade-up fade-up-1">
-          <ArrowLeft size={15} /> All Courses
-        </Link>
+      <div className="p-6 lg:pt-0 w-full mx-auto">
 
-        {/* Course header */}
-        <div className="rounded-2xl overflow-hidden mb-8 fade-up fade-up-2" style={{ background: '#1C202E', border: '1px solid rgba(42,47,58,0.5)' }}>
-          <center>{course.title}</center>
-        </div>
-        {/* YouTube Style Subjects Grid */}
-        <div className="fade-up fade-up-3 p-4">
-          <h2 className="font-display text-xl font-bold text-white mb-6">
-            Subjects
-          </h2>
-          <div className="grid grid-cols-3 sm:grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 ">
-            {subjects.map((subject) => {
-              const units: Unit[] =
-                data?.units.filter((u) => u.subject_id === subject.subject_id) ?? [];
+        {/* Header (Dashboard Style) */}
+        <div className="mb-10">
+          <div className="flex items-center justify-between">
 
-              return (
-                <Link
-                  key={subject.subject_id}
-                  href={`/subjects/${subject.subject_id}`}
-                  className="group"
-                >
-                  <div className="bg-neutral-primary-soft block max-w-sm p-6 overflow-hidden rounded-2xl shadow-xs">
-                    <div className='overflow-hidden h-36 relative'>
-                      <img className="object-cover aspect-16/9 h-[300]" src={subject.subject_image} alt={subject.title} />
-                    </div>
-                    <h5 className="mt-6 mb-2 text-2xl font-semibold tracking-tight text-heading">{subject.title}</h5>
-                  
-                  </div>
+            <div className="flex items-center gap-3">
+              <Link
+                href="/dashboard"
+                className="p-2 rounded-lg border border-gray-700 text-gray-400 hover:text-yellow-400 transition"
+              >
+                <ArrowLeft size={16} />
+              </Link>
 
-                </Link>
-              );
-            })}
+              <div>
+                <h1 className="text-2xl lg:text-4xl font-bold text-white">
+                  {course.title}
+                </h1>
+                <p className="text-gray-400 mt-1 text-sm">
+                  {subjects.length} subjects available
+                </p>
+              </div>
+            </div>
+
           </div>
+        </div>
+
+        {/* Subjects Section */}
+        <div>
+
+
+
+          <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-6">
+            {subjects.map((subject) => (
+              <Link
+                key={subject.subject_id}
+                href={`/subjects/${subject.subject_id}`}
+                className="rounded-2xl overflow-hidden bg-gray-800 border border-gray-700 hover:shadow-lg transition block"
+              >
+
+                {/* Image */}
+                <div className="h-40 relative overflow-hidden">
+                  {subject.subject_image ? (
+                    <img
+                      src={subject.subject_image}
+                      alt={subject.title}
+                      className="w-full h-full object-fit"
+                    />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center">
+                      <Layers size={32} className="text-gray-500" />
+                    </div>
+                  )}
+                  <div className="absolute inset-0 " />
+                </div>
+
+                {/* Content */}
+                <div className="p-4">
+                  <h3 className="font-semibold text-white text-sm truncate">
+                    {subject.title}
+                  </h3>
+
+
+                </div>
+
+              </Link>
+            ))}
+          </div>
+
         </div>
       </div>
     </AppShell>
