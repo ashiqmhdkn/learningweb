@@ -112,7 +112,7 @@ export default function SubjectPage() {
                     <VideoIcon size={32} className="text-gray-500" />
                   </div>
                 )}
-                <div className="absolute inset-0 bg-gradient-to-t from-gray-900 to-transparent" />
+                <div className="absolute inset-0 " />
               </div>
 
               {/* Content */}

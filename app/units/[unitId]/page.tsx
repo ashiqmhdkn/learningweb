@@ -17,7 +17,7 @@ export default function UnitPage() {
   useEffect(() => {
     const cached = localStorage.getItem('cl_data');
     if (cached) {
-      try { 
+      try {
         const d = JSON.parse(cached);
         setData(d);
         // Auto-select first video
@@ -25,13 +25,13 @@ export default function UnitPage() {
         if (u?.videos?.[0]) setActiveVideo(u.videos[0]);
         setLoading(false);
         return;
-      } catch (_) {}
+      } catch (_) { }
     }
     const token = localStorage.getItem('cl_token');
     if (!token) { router.push('/login'); return; }
     profileApi(token)
-      .then((d) => { 
-        localStorage.setItem('cl_data', JSON.stringify(d)); 
+      .then((d) => {
+        localStorage.setItem('cl_data', JSON.stringify(d));
         setData(d);
         const u = d.units.find((un) => un.unit_id === unitId);
         if (u?.videos?.[0]) setActiveVideo(u.videos[0]);
@@ -76,92 +76,116 @@ export default function UnitPage() {
 
   return (
     <AppShell>
-      <div className="p-6 lg:p-10 max-w-7xl mx-auto">
-        {/* Back */}
-        <Link 
-          href={`/dashboard`} 
-          className="inline-flex items-center gap-2 text-slate-soft hover:text-gold text-sm mb-6 transition-colors fade-up fade-up-1"
-        >
-          <ArrowLeft size={15} /> Back to Course
-        </Link>
+      <div className="p-6 lg:pt-0 w-full mx-auto">
 
-        {/* Header */}
-        <div className="mb-8 fade-up fade-up-2">
-          <h1 className="font-display text-2xl lg:text-3xl font-bold text-white mb-2">{unit.title}</h1>
-          <div className="flex gap-4 text-xs text-slate-dim">
-            <span className="flex items-center gap-1"><VideoIcon size={12} /> {videos.length} videos</span>
-            <span className="flex items-center gap-1"><FileText size={12} /> {notes.length} notes</span>
+        {/* Header (aligned with previous pages) */}
+        <div className="mb-1">
+          <div className="flex items-center gap-3">
+
+            <Link
+              href="/dashboard"
+              className="p-2 rounded-lg border border-gray-700 text-gray-400 hover:text-yellow-400 transition"
+            >
+              <ArrowLeft size={16} />
+            </Link>
+
+            <div>
+              <h1 className="text-2xl lg:text-4xl font-bold text-white">
+                {unit.title}
+              </h1>
+              <p className="text-gray-400 mt-1 text-sm flex gap-4">
+                <span className="flex items-center gap-1">
+                  <VideoIcon size={12} /> {videos.length} videos
+                </span>
+                <span className="flex items-center gap-1">
+                  <FileText size={12} /> {notes.length} notes
+                </span>
+              </p>
+            </div>
+
           </div>
         </div>
 
+        {/* Main Layout */}
         <div className="grid lg:grid-cols-3 gap-6">
-          {/* Main: Video player */}
-          <div className="lg:col-span-2 fade-up fade-up-3">
-            <div className="rounded-2xl overflow-hidden mb-6" style={{ background: '#1C202E', border: '1px solid rgba(42,47,58,0.5)' }}>
+
+          {/* Video Player */}
+          <div className="lg:col-span-2">
+
+            <div className="rounded-2xl overflow-hidden bg-gray-800 border border-gray-700 mb-6">
               {activeVideo ? (
                 <>
                   {activeVideo.video_url ? (
-                    <video 
-                      className="video-player w-full" 
-                      controls 
-                      key={activeVideo.video_id}
-                      poster={activeVideo.thumbnail_url}
-                    >
-                      <source src={activeVideo.video_url} type="video/mp4" />
-                      Your browser does not support video playback.
-                    </video>
+                    <div className="aspect-video w-full bg-black">
+                      <video
+                        className="w-full h-full object-contain"
+                        controls
+                        key={activeVideo.video_id}
+                        poster={activeVideo.thumbnail_url}
+                      >
+                        <source src={activeVideo.video_url} type="video/mp4" />
+                      </video>
+                    </div>
                   ) : (
-                    <div className="aspect-video flex items-center justify-center bg-black/50">
-                      <p className="text-slate-soft text-sm">Video URL not available</p>
+                    <div className="aspect-video flex items-center justify-center">
+                      <p className="text-gray-400 text-sm">Video unavailable</p>
                     </div>
                   )}
-                  <div className="p-5 border-t border-surface-3/40">
-                    <h2 className="font-semibold text-white text-lg mb-1">{activeVideo.title}</h2>
+
+                  <div className="p-4 border-t border-gray-700">
+                    <h2 className="font-semibold text-white text-base">
+                      {activeVideo.title}
+                    </h2>
+
                     {activeVideo.description && (
-                      <p className="text-slate-soft text-sm mt-2">{activeVideo.description}</p>
+                      <p className="text-gray-400 text-sm mt-2">
+                        {activeVideo.description}
+                      </p>
                     )}
+
                     {activeVideo.duration && (
-                      <p className="text-xs text-slate-dim mt-3 flex items-center gap-1">
-                        <Clock size={11} /> Duration: {formatDuration(activeVideo.duration)}
+                      <p className="text-xs text-gray-500 mt-3 flex items-center gap-1">
+                        <Clock size={11} /> {formatDuration(activeVideo.duration)}
                       </p>
                     )}
                   </div>
                 </>
               ) : (
                 <div className="aspect-video flex items-center justify-center">
-                  <p className="text-slate-soft">No video selected</p>
+                  <p className="text-gray-400">No video selected</p>
                 </div>
               )}
             </div>
 
-            {/* Notes section */}
+            {/* Notes */}
             {notes.length > 0 && (
-              <div className="rounded-2xl p-5" style={{ background: '#1C202E', border: '1px solid rgba(42,47,58,0.5)' }}>
+              <div className="rounded-2xl p-5 bg-gray-800 border border-gray-700">
                 <h3 className="font-semibold text-white text-sm mb-4 flex items-center gap-2">
-                  <FileText size={16} color="#C9A84C" /> Notes & Materials
+                  <FileText size={16} className="text-yellow-400" /> Notes & Materials
                 </h3>
+
                 <div className="space-y-2">
                   {notes.map((note) => (
                     <div
                       key={note.note_id}
-                      className="flex items-center justify-between p-3 rounded-xl hover:bg-white/3 transition-colors"
-                      style={{ border: '1px solid rgba(42,47,58,0.4)' }}
+                      className="flex items-center justify-between p-3 rounded-xl border border-gray-700 hover:bg-gray-700/30 transition"
                     >
-                      <div className="flex-1 min-w-0">
+                      <div className="min-w-0">
                         <p className="text-sm text-white truncate">{note.title}</p>
                         {note.file_size && (
-                          <p className="text-xs text-slate-dim mt-0.5">
+                          <p className="text-xs text-gray-400">
                             {(note.file_size / 1024).toFixed(1)} KB
                           </p>
                         )}
                       </div>
+
                       {note.file_path && (
                         <a
                           href={note.file_path}
                           download
-                          className="ml-3 w-8 h-8 rounded-lg flex items-center justify-center hover:bg-gold/10 transition-colors"
+                          className="ml-3 p-2 rounded-lg hover:bg-yellow-400/10"
                         >
-                          <Download size={14} color="#C9A84C" />
+                          <Download size={14} className="text-yellow-400" />
                         </a>
                       )}
                     </div>
@@ -169,58 +193,58 @@ export default function UnitPage() {
                 </div>
               </div>
             )}
+
           </div>
 
-          {/* Sidebar: Video playlist */}
-          <div className="fade-up fade-up-4">
-            <div className="rounded-2xl p-4" style={{ background: '#1C202E', border: '1px solid rgba(42,47,58,0.5)' }}>
-              <h3 className="font-semibold text-white text-sm mb-4">Video Playlist</h3>
+          {/* Playlist */}
+          <div>
+            <div className="rounded-2xl p-4 bg-gray-800 border border-gray-700">
+              <h3 className="font-semibold text-white text-sm mb-4">
+                Playlist
+              </h3>
+
               {videos.length === 0 ? (
-                <p className="text-slate-dim text-sm">No videos available</p>
+                <p className="text-gray-400 text-sm">No videos available</p>
               ) : (
                 <div className="space-y-2 max-h-[600px] overflow-y-auto pr-1">
                   {videos.map((video, i) => {
                     const isActive = activeVideo?.video_id === video.video_id;
+
                     return (
                       <button
                         key={video.video_id}
                         onClick={() => setActiveVideo(video)}
-                        className="w-full text-left rounded-xl overflow-hidden transition-all"
-                        style={{
-                          background: isActive ? 'rgba(201,168,76,0.1)' : 'rgba(36,40,64,0.3)',
-                          border: `1px solid ${isActive ? 'rgba(201,168,76,0.3)' : 'transparent'}`,
-                        }}
+                        className={`w-full text-left rounded-xl p-3 transition border ${isActive
+                          ? 'border-yellow-400/40 bg-yellow-400/10'
+                          : 'border-transparent hover:bg-gray-700/40'
+                          }`}
                       >
-                        <div className="flex items-start gap-3 p-3">
-                          {/* Thumbnail */}
-                          <div className="relative flex-shrink-0 w-16 h-10 rounded-lg overflow-hidden bg-black/30">
+                        <div className="flex gap-3">
+
+                          <div className="w-16 h-10 rounded-lg overflow-hidden bg-black/30 flex-shrink-0">
                             {video.thumbnail_url ? (
-                              // eslint-disable-next-line @next/next/no-img-element
-                              <img src={video.thumbnail_url} alt="" className="w-full h-full object-cover" />
+                              <img
+                                src={video.thumbnail_url}
+                                className="w-full h-full object-cover"
+                              />
                             ) : (
                               <div className="w-full h-full flex items-center justify-center">
-                                <Play size={12} color="rgba(201,168,76,0.5)" fill="rgba(201,168,76,0.5)" />
+                                <Play size={12} className="text-gray-500" />
                               </div>
                             )}
-                            <div className="absolute bottom-0.5 right-0.5 px-1 text-[9px] font-bold bg-black/80 text-white rounded">
-                              {formatDuration(video.duration) || '—'}
-                            </div>
                           </div>
 
-                          {/* Info */}
                           <div className="flex-1 min-w-0">
-                            <div className="flex items-start gap-2 mb-1">
-                              <span 
-                                className="text-[10px] font-bold px-1.5 py-0.5 rounded"
-                                style={{ background: 'rgba(201,168,76,0.15)', color: '#C9A84C' }}
-                              >
-                                {i + 1}
-                              </span>
-                              <p className={`text-xs flex-1 line-clamp-2 ${isActive ? 'text-gold font-medium' : 'text-white/80'}`}>
-                                {video.title}
-                              </p>
-                            </div>
+                            <p className={`text-xs line-clamp-2 ${isActive ? 'text-yellow-400 font-medium' : 'text-gray-300'
+                              }`}>
+                              {video.title}
+                            </p>
+
+                            <p className="text-[10px] text-gray-500 mt-1">
+                              {formatDuration(video.duration) || '—'}
+                            </p>
                           </div>
+
                         </div>
                       </button>
                     );
@@ -229,6 +253,7 @@ export default function UnitPage() {
               )}
             </div>
           </div>
+
         </div>
       </div>
     </AppShell>
