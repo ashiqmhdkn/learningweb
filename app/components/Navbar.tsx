@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useAuth } from "@/api/auth-context";
 import { LayoutDashboard, BookOpen, LogOut } from "lucide-react";
+import { useEffect, useRef } from "react";
 
 const navItems = [
   { href: "/dashboard", icon: LayoutDashboard, label: "Dashboard" },
@@ -12,13 +13,19 @@ const navItems = [
 
 export default function Navbar() {
   const pathname = usePathname();
+const { token, logout } = useAuth();
   const router = useRouter();
-  const { logout } = useAuth();
+  const redirected = useRef(false); // ← prevent double redirect
 
-  const handleLogout = () => {
-    logout();
-    router.push("/login");
-  };
+  useEffect(() => {
+    if (!token && !redirected.current) {
+      redirected.current = true;
+      router.replace('/');
+    }
+  }, [token]); // ← only watch token, not router
+
+  if (!token) return null;
+// prevent flash
 
   return (
     <nav className="fixed top-0 w-full z-50  border-b border-white/10 shadow-md" style={{ background: 'rgba(108, 75, 240, 0.95)' }} >
@@ -54,7 +61,7 @@ export default function Navbar() {
 
             {/* Logout */}
             <button
-              onClick={handleLogout}
+              onClick={logout}
               className="flex items-center gap-2 text-sm text-gray-300 hover:text-red-400 transition"
             >
               <LogOut size={16} />

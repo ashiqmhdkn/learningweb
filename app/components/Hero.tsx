@@ -1,15 +1,17 @@
- 
+import { ArrowRight, MessageCircle, Star, Award } from "lucide-react";
+
 const STATS = [
-  { value: "38+", label: "Years of Excellence", sub: "Serving the community since 1987" },
-  { value: "100k+", label: "Students Trained", sub: "Across all academic divisions" },
+  { value: "38+", label: "Years of Excellence", sub: "Since 1987" },
+  { value: "100k+", label: "Students Trained", sub: "Across all divisions" },
 ];
+
 export default function Hero() {
   return (
-    <section className="min-h-screen flex flex-col justify-center items-center text-center px-4 pt-16 bg-gradient-to-b from-emerald-50 to-white">
+     <section className="min-h-screen flex flex-col justify-center items-center text-center px-4 pt-16 bg-gradient-to-b from-emerald-100 to-white">
       <img
-        src="/icons/crescent.png"
+        src="/logo.png"
         alt="Crescent Learning"
-        className="h-20 w-20 object-contain mb-6"
+        className="h-20 w-20 object-contain mb-6 mt-10"
         onError={(e) => {
           (e.target as HTMLImageElement).style.display = "none";
         }}
