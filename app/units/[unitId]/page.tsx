@@ -112,8 +112,8 @@ export default function UnitPage() {
           <button
             onClick={() => setActiveTab('videos')}
             className={`pb-3 px-1 text-sm font-medium transition border-b-2 flex items-center gap-2 ${activeTab === 'videos'
-                ? 'border-yellow-400 text-yellow-400'
-                : 'border-transparent text-gray-400 hover:text-white hover:border-gray-600'
+              ? 'border-yellow-400 text-yellow-400'
+              : 'border-transparent text-gray-400 hover:text-white hover:border-gray-600'
               }`}
           >
             <VideoIcon size={16} />
@@ -122,8 +122,8 @@ export default function UnitPage() {
           <button
             onClick={() => setActiveTab('notes')}
             className={`pb-3 px-1 text-sm font-medium transition border-b-2 flex items-center gap-2 ${activeTab === 'notes'
-                ? 'border-yellow-400 text-yellow-400'
-                : 'border-transparent text-gray-400 hover:text-white hover:border-gray-600'
+              ? 'border-yellow-400 text-yellow-400'
+              : 'border-transparent text-gray-400 hover:text-white hover:border-gray-600'
               }`}
           >
             <FileText size={16} />
@@ -132,8 +132,8 @@ export default function UnitPage() {
           <button
             onClick={() => setActiveTab('exam')}
             className={`pb-3 px-1 text-sm font-medium transition border-b-2 flex items-center gap-2 ${activeTab === 'exam'
-                ? 'border-yellow-400 text-yellow-400'
-                : 'border-transparent text-gray-400 hover:text-white hover:border-gray-600'
+              ? 'border-yellow-400 text-yellow-400'
+              : 'border-transparent text-gray-400 hover:text-white hover:border-gray-600'
               }`}
           >
             <ClipboardList size={16} />

@@ -13,7 +13,7 @@ html {
 
 body {
   background: #212020;
-  color: #E8E8E8;
+  color: #232222;
   font-family: var(--font-body);
   min-height: 100vh;
 }
@@ -241,6 +241,7 @@ body {
   color: #90CDF4;
   border: 1px solid rgba(99, 179, 237, 0.2);
 }
+
 :root {
   /* Updated color scheme to white, orange, and dark blue */
   --background: oklch(1 0 0);
@@ -446,18 +447,15 @@ body {
 }
 
 .glass-border:hover {
-  filter: drop-shadow(0 0 2px rgba(230, 126, 34, 0.2)) drop-shadow(1px 0 2px rgba(41, 84, 209, 0.15))
-    drop-shadow(-1px 0 2px rgba(230, 126, 34, 0.1));
+  filter: drop-shadow(0 0 2px rgba(230, 126, 34, 0.2)) drop-shadow(1px 0 2px rgba(41, 84, 209, 0.15)) drop-shadow(-1px 0 2px rgba(230, 126, 34, 0.1));
 }
 
 .glass-border-enhanced:hover {
-  filter: drop-shadow(0 0 3px rgba(230, 126, 34, 0.25)) drop-shadow(1px 0 3px rgba(41, 84, 209, 0.2))
-    drop-shadow(-1px 0 3px rgba(230, 126, 34, 0.15));
+  filter: drop-shadow(0 0 3px rgba(230, 126, 34, 0.25)) drop-shadow(1px 0 3px rgba(41, 84, 209, 0.2)) drop-shadow(-1px 0 3px rgba(230, 126, 34, 0.15));
 }
 
 .glass-border-subtle:hover {
-  filter: drop-shadow(0 0 1px rgba(230, 126, 34, 0.15)) drop-shadow(0.5px 0 1px rgba(41, 84, 209, 0.1))
-    drop-shadow(-0.5px 0 1px rgba(230, 126, 34, 0.08));
+  filter: drop-shadow(0 0 1px rgba(230, 126, 34, 0.15)) drop-shadow(0.5px 0 1px rgba(41, 84, 209, 0.1)) drop-shadow(-0.5px 0 1px rgba(230, 126, 34, 0.08));
 }
 
 /* Apple Site Header Glass Effects - Clean, Minimal, Crisp */
@@ -507,18 +505,15 @@ body {
 
 /* Enhanced glass border hover effects with chromatic aberration */
 .glass-border:hover {
-  filter: drop-shadow(0 0 2px rgba(255, 0, 0, 0.1)) drop-shadow(1px 0 2px rgba(0, 255, 0, 0.08))
-    drop-shadow(-1px 0 2px rgba(0, 0, 255, 0.06));
+  filter: drop-shadow(0 0 2px rgba(255, 0, 0, 0.1)) drop-shadow(1px 0 2px rgba(0, 255, 0, 0.08)) drop-shadow(-1px 0 2px rgba(0, 0, 255, 0.06));
 }
 
 .glass-border-enhanced:hover {
-  filter: drop-shadow(0 0 3px rgba(255, 0, 0, 0.12)) drop-shadow(1px 0 3px rgba(0, 255, 0, 0.1))
-    drop-shadow(-1px 0 3px rgba(0, 0, 255, 0.08));
+  filter: drop-shadow(0 0 3px rgba(255, 0, 0, 0.12)) drop-shadow(1px 0 3px rgba(0, 255, 0, 0.1)) drop-shadow(-1px 0 3px rgba(0, 0, 255, 0.08));
 }
 
 .glass-border-subtle:hover {
-  filter: drop-shadow(0 0 1px rgba(255, 0, 0, 0.06)) drop-shadow(0.5px 0 1px rgba(0, 255, 0, 0.05))
-    drop-shadow(-0.5px 0 1px rgba(0, 0, 255, 0.04));
+  filter: drop-shadow(0 0 1px rgba(255, 0, 0, 0.06)) drop-shadow(0.5px 0 1px rgba(0, 255, 0, 0.05)) drop-shadow(-0.5px 0 1px rgba(0, 0, 255, 0.04));
 }
 
 /* Logo Marquee Animations - Seamless Infinite Loop */
@@ -526,6 +521,7 @@ body {
   0% {
     transform: translateX(-33.333%);
   }
+
   100% {
     transform: translateX(0%);
   }
@@ -535,6 +531,7 @@ body {
   0% {
     transform: translateX(0%);
   }
+
   100% {
     transform: translateX(-33.333%);
   }
