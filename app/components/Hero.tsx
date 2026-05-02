@@ -11,7 +11,13 @@ export default function Hero() {
     //  className="h-screen w-full flex flex-col justify-center items-center text-center px-4 pt-16 bg-[radial-gradient(#002557_1.7px,transparent_1px)] 
     //         bg-size-[12px_12px]
     //         transition-all duration-300"
-           
+            onMouseMove={(e) => {
+        const rect = e.currentTarget.getBoundingClientRect();
+        setPos({
+          x: e.clientX - rect.left,
+          y: e.clientY - rect.top,
+        });
+      }}
       >
                 
      

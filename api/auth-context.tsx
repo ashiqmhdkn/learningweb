@@ -2,7 +2,7 @@
 
 import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
 import { User } from './api';
-import { useRouter } from 'next/router';
+import { Router } from 'next/router';
 
 interface AuthCtx {
   token: string | null;
@@ -36,30 +36,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setUser(u);
   };
 
-  // const logout = () => {
-  //   // This replicates the logic inside the logout() function in auth-context.tsx
-  //   localStorage.removeItem('cl_token');
-  //   localStorage.removeItem('cl_user');
-  //   localStorage.removeItem('cl_data');
-  //   location.reload(); // Refresh the page to update the React state  
-  //   setAuth(null);
-  //   setUser(null);
-  //   setItem('cl_token',null);
-  //   setItem('cl_user',null);
-  //   setItem('cl_data',null);
-
-  //   localStorage.clear();
-  // };
- const router = useRouter();
-
-const logout = () => {
-  setToken(null);
-  setUser(null);
-  localStorage.removeItem('cl_token');
-  localStorage.removeItem('cl_user');
-  localStorage.removeItem('cl_data');
-  router.replace('/'); // use Next.js router, not window.location
-};
+  const logout = () => {
+    localStorage.removeItem('cl_token');
+    localStorage.removeItem('cl_user');
+    localStorage.removeItem('cl_data');
+    setToken(null);
+    setUser(null);
+    router.replace('/login');
+  };
 
   return (
     <AuthContext.Provider value={{ token, user, setAuth, logout }}>

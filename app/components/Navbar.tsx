@@ -12,20 +12,13 @@ const navItems = [
 ];
 
 export default function Navbar() {
-  const pathname = usePathname();
-const { token, logout } = useAuth();
-  const router = useRouter();
-  const redirected = useRef(false); // ← prevent double redirect
+const router = useRouter();
+function LogOut(){
+console.log("Logout");
+useAuth().logout();
+router.replace('/login');
 
-  useEffect(() => {
-    if (!token && !redirected.current) {
-      redirected.current = true;
-      router.replace('/');
-    }
-  }, [token]); // ← only watch token, not router
-
-  if (!token) return null;
-// prevent flash
+};
 
   return (
     <nav className="fixed top-0 w-full z-50  border-b border-white/10 shadow-md" style={{ background: 'rgba(108, 75, 240, 0.95)' }} >
@@ -42,7 +35,7 @@ const { token, logout } = useAuth();
 
             {navItems.map(({ href, icon: Icon, label }) => {
               const active =
-                pathname === href || pathname.startsWith(href + "/");
+                usePathname() === href || usePathname().startsWith(href + "/");
 
               return (
                 <Link
@@ -58,15 +51,12 @@ const { token, logout } = useAuth();
                 </Link>
               );
             })}
-
-            {/* Logout */}
             <button
-              onClick={logout}
-              className="flex items-center gap-2 text-sm text-gray-300 hover:text-red-400 transition"
-            >
-              <LogOut size={16} />
-              <span className="hidden md:inline">Sign Out</span>
-            </button>
+  onClick={LogOut}
+  className="flex items-center gap-2 text-sm text-gray-300 hover:text-red-400 transition"
+>
+  Sign Out
+</button>
 
           </div>
         </div>

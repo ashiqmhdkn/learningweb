@@ -1,9 +1,8 @@
 'use client';
-import { useState, useEffect, useRef } from "react";
-import Image from "next/image";
-import Link from "next/link";
-import Topbar from "./components/Topbar";
+import { useEffect } from "react";
 import { useRouter } from 'next/navigation';
+import { useAuth } from "@/api/auth-context";
+import Topbar from "./components/Topbar";
 import Hero from "./components/Hero";
 import About from "./components/About";
 import Divisions from "./components/Divisions";
@@ -13,25 +12,25 @@ import Team from "./components/Team";
 import Gallery from "./components/Gallery";
 import Collaborators from "./components/Collaborators";
 import WhatsAppButton from "./components/WhatsAppButton";
-import { useAuth } from "@/api/auth-context";
+
+// Reuse in both loading states
+const Spinner = () => (
+  <div className="min-h-screen flex items-center justify-center bg-white">
+    <div className="w-8 h-8 border-4 border-emerald-600 border-t-transparent rounded-full animate-spin" />
+  </div>
+);
 
 export default function Home() {
   const router = useRouter();
-  const { token } = useAuth(); // use context, not localStorage directly
-  const [ready, setReady] = useState(false);
+  const { token } = useAuth();
 
   useEffect(() => {
-    if (token) {
-      router.replace('/dashboard');
-    } else {
-      setReady(true);
-    }
-  }, []); // ← empty deps, run only ONCE on mount
+    if (token) router.replace('/dashboard');
+  }, []);
 
-  if (!ready) return null;
   return (
-   <>
-       <Topbar />
+    <>
+      <Topbar />
       <main id="main-content">
         <Hero />
         <About />
