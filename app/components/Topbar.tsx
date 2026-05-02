@@ -28,7 +28,7 @@ export default function Topbar() {
         {/* Logo */}
         <Link href="/" className="flex items-center gap-2">
           <img
-            src="/icons/crescent.png"
+              src="/logo.png"
             alt="Crescent Learning"
             className="h-9 w-9 object-contain"
             onError={(e) => {

@@ -25,7 +25,7 @@ export default function Collaborators() {
               <img
                 src={c.img}
                 alt={c.name}
-                className="h-12 w-full object-contain grayscale hover:grayscale-0 transition-all"
+                className="h-12 w-full object-contain grayscale-0 hover:grayscale-100 transition-all"
                 onError={(e) => {
                   (e.target as HTMLImageElement).style.display = "none";
                 }}

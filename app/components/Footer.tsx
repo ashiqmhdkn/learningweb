@@ -6,9 +6,9 @@ export default function Footer() {
         <div>
           <div className="flex items-center gap-2 mb-3">
             <img
-              src="/icons/crescent.png"
+              src="/logo.png"
               alt="Crescent Learning"
-              className="h-8 w-8 object-contain brightness-0 invert"
+              className="h-8 w-8 object-contain"
               onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }}
             />
             <span className="font-bold text-white text-lg">Crescent Learning</span>
