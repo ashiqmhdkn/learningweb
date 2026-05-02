@@ -57,9 +57,9 @@ export default function CoursePage() {
         <div className="p-10 text-center">
           <BookOpen size={48} color="rgba(138,149,168,0.3)" className="mx-auto mb-4" />
           <p className="text-slate-soft">Course not found</p>
-          <Link href="/courses" className="text-gold text-sm mt-3 inline-flex items-center gap-1">
-            <ArrowLeft size={14} /> Back to courses
-          </Link>
+          <button onClick={() => router.back()} className="text-gold text-sm mt-3 inline-flex items-center gap-1">
+            <ArrowLeft size={14} /> Back
+          </button>
         </div>
       </AppShell>
     );
@@ -74,12 +74,12 @@ export default function CoursePage() {
           <div className="flex items-center justify-between">
 
             <div className="flex items-center gap-3">
-              <Link
-                href="/dashboard"
+              <button
+                onClick={() => router.back()}
                 className="p-2 rounded-lg border border-gray-700 text-gray-400 hover:text-yellow-400 transition"
               >
                 <ArrowLeft size={16} />
-              </Link>
+              </button>
 
               <div>
                 <h1 className="text-2xl lg:text-4xl font-bold text-white">

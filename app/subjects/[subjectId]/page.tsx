@@ -55,9 +55,9 @@ export default function SubjectPage() {
       <AppShell>
         <div className="p-10 text-center">
           <p className="text-slate-soft">Unit not found</p>
-          <Link href={`/dashboard`} className="text-gold text-sm mt-3 inline-flex items-center gap-1">
-            <ArrowLeft size={14} /> Back to home
-          </Link>
+          <button onClick={() => router.back()} className="text-gold text-sm mt-3 inline-flex items-center gap-1">
+            <ArrowLeft size={14} /> Back
+          </button>
         </div>
       </AppShell>
     );
@@ -71,12 +71,12 @@ export default function SubjectPage() {
         <div className="mb-10">
           <div className="flex items-center gap-3">
 
-            <Link
-              href="/dashboard"
+            <button
+              onClick={() => router.back()}
               className="p-2 rounded-lg border border-gray-700 text-gray-400 hover:text-yellow-400 transition"
             >
               <ArrowLeft size={16} />
-            </Link>
+            </button>
 
             <div>
               <h1 className="text-2xl lg:text-4xl font-bold text-white">

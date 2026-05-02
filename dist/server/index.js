@@ -1,4 +1,4 @@
-globalThis.__VINEXT_LAZY_CHUNKS__ = ["assets/query-BbOc3VB2.js","assets/router-Ds3V4D5g.js","assets/worker-entry-Bvq-8f-X.js"];
+globalThis.__VINEXT_LAZY_CHUNKS__ = ["assets/query-BbOc3VB2.js","assets/router-Ds3V4D5g.js","assets/worker-entry-CIKVF-_C.js"];
 import { a as renderToReadableStream$2, c as require_react_react_server, d as __toESM, l as __commonJSMin, n as decodeReply, o as loadServerAction, r as registerClientReference, s as setRequireModule, t as createTemporaryReferenceSet, u as __exportAll } from "./assets/encryption-runtime-DNIzdte6.js";
 import { AsyncLocalStorage } from "node:async_hooks";
 import assetsManifest from "./__vite_rsc_assets_manifest.js";
@@ -1359,7 +1359,7 @@ var NextURL = class NextURL {
 	* Matches the Next.js API: `request.nextUrl.buildId`.
 	*/
 	get buildId() {
-		return "f7920c77-7878-4ceb-9b43-c9de27e9e1cd";
+		return "9b996ea5-900c-47a3-9efc-0685856b7cbd";
 	}
 };
 var RequestCookies = class {
@@ -6128,7 +6128,7 @@ function __isrFnv1a64(s) {
 }
 function __isrCacheKey(pathname, suffix) {
 	const normalized = pathname === "/" ? "/" : pathname.replace(/\/$/, "");
-	const prefix = "app:f7920c77-7878-4ceb-9b43-c9de27e9e1cd";
+	const prefix = "app:9b996ea5-900c-47a3-9efc-0685856b7cbd";
 	const key = prefix + ":" + normalized + ":" + suffix;
 	if (key.length <= 200) return key;
 	return prefix + ":__hash:" + __isrFnv1a64(normalized) + ":" + suffix;
@@ -6694,6 +6694,7 @@ var __publicFiles = new Set([
 	"/_headers",
 	"/file.svg",
 	"/globe.svg",
+	"/logo.png",
 	"/next.svg",
 	"/vercel.svg",
 	"/window.svg"
