@@ -2,6 +2,7 @@
 
 import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
 import { User } from './api';
+import { Router, useRouter } from 'next/router';
 
 interface AuthCtx {
   token: string | null;
@@ -20,6 +21,7 @@ const AuthContext = createContext<AuthCtx>({
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [token, setToken] = useState<string | null>(null);
   const [user, setUser] = useState<User | null>(null);
+  const router = useRouter();
 
   useEffect(() => {
     const t = localStorage.getItem('cl_token');
@@ -41,6 +43,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     localStorage.removeItem('cl_data');
     setToken(null);
     setUser(null);
+    router.replace('/login');
   };
 
   return (

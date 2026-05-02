@@ -1,4 +1,3 @@
-globalThis.__VINEXT_LAZY_CHUNKS__ = ["assets/query-BbOc3VB2.js","assets/router-Ds3V4D5g.js","assets/worker-entry-CIKVF-_C.js"];
 import { a as renderToReadableStream$2, c as require_react_react_server, d as __toESM, l as __commonJSMin, n as decodeReply, o as loadServerAction, r as registerClientReference, s as setRequireModule, t as createTemporaryReferenceSet, u as __exportAll } from "./assets/encryption-runtime-DNIzdte6.js";
 import { AsyncLocalStorage } from "node:async_hooks";
 import assetsManifest from "./__vite_rsc_assets_manifest.js";
@@ -438,7 +437,7 @@ function isContentLengthHeader(name) {
 function cancelResponseBody(response) {
 	const body = response.body;
 	if (!body || body.locked) return;
-	body.cancel().catch(() => {});
+	body.cancel().catch(() => { });
 }
 function buildHeaderRecord(response, omitNames = []) {
 	const omitted = new Set(omitNames.map((name) => name.toLowerCase()));
@@ -508,37 +507,43 @@ async function resolveStaticAssetSignal(signalResponse, options) {
 }
 //#endregion
 //#region \0virtual:vite-rsc/server-references
-var server_references_default = { "c55148d2fa51": async () => {
-	const { loginApi, profileApi } = await import("./assets/api-C3im0tNV.js");
-	return {
-		loginApi,
-		profileApi
-	};
-} };
+var server_references_default = {
+	"c55148d2fa51": async () => {
+		const { loginApi, profileApi } = await import("./assets/api-C3im0tNV.js");
+		return {
+			loginApi,
+			profileApi
+		};
+	}
+};
 //#endregion
 //#region node_modules/@vitejs/plugin-rsc/dist/rsc.js
 initialize();
 function initialize() {
-	setRequireModule({ load: async (id) => {
-		{
-			const import_ = server_references_default[id];
-			if (!import_) throw new Error(`server reference not found '${id}'`);
-			return import_();
+	setRequireModule({
+		load: async (id) => {
+			{
+				const import_ = server_references_default[id];
+				if (!import_) throw new Error(`server reference not found '${id}'`);
+				return import_();
+			}
 		}
-	} });
+	});
 }
 function renderToReadableStream$1(data, options, extraOptions) {
-	return renderToReadableStream$2(data, options, { onClientReference(metadata) {
-		const deps = assetsManifest.clientReferenceDeps[metadata.id] ?? {
-			js: [],
-			css: []
-		};
-		extraOptions?.onClientReference?.({
-			id: metadata.id,
-			name: metadata.name,
-			deps
-		});
-	} });
+	return renderToReadableStream$2(data, options, {
+		onClientReference(metadata) {
+			const deps = assetsManifest.clientReferenceDeps[metadata.id] ?? {
+				js: [],
+				css: []
+			};
+			extraOptions?.onClientReference?.({
+				id: metadata.id,
+				name: metadata.name,
+				deps
+			});
+		}
+	});
 }
 //#endregion
 //#region node_modules/vinext/dist/shims/readonly-url-search-params.js
@@ -903,7 +908,7 @@ function parseCookieHeader(cookieHeader) {
 		const value = pair.slice(splitAt + 1);
 		try {
 			cookies.set(key, decodeURIComponent(value));
-		} catch {}
+		} catch { }
 	}
 	return cookies;
 }
@@ -1023,15 +1028,17 @@ var _HEADERS_MUTATING_METHODS = new Set([
 */
 function headersContextFromRequest(request) {
 	let _mutable = null;
-	const headersProxy = new Proxy(request.headers, { get(target, prop) {
-		const src = _mutable ?? target;
-		if (typeof prop === "string" && _HEADERS_MUTATING_METHODS.has(prop)) return (...args) => {
-			if (!_mutable) _mutable = new Headers(target);
-			return _mutable[prop](...args);
-		};
-		const value = Reflect.get(src, prop, src);
-		return typeof value === "function" ? value.bind(src) : value;
-	} });
+	const headersProxy = new Proxy(request.headers, {
+		get(target, prop) {
+			const src = _mutable ?? target;
+			if (typeof prop === "string" && _HEADERS_MUTATING_METHODS.has(prop)) return (...args) => {
+				if (!_mutable) _mutable = new Headers(target);
+				return _mutable[prop](...args);
+			};
+			const value = Reflect.get(src, prop, src);
+			return typeof value === "function" ? value.bind(src) : value;
+		}
+	});
 	let _cookies = null;
 	function getCookies() {
 		if (_cookies) return _cookies;
@@ -1342,10 +1349,12 @@ var NextURL = class NextURL {
 	clone() {
 		const config = {
 			basePath: this._basePath,
-			nextConfig: this._locales ? { i18n: {
-				locales: [...this._locales],
-				defaultLocale: this._defaultLocale
-			} } : void 0
+			nextConfig: this._locales ? {
+				i18n: {
+					locales: [...this._locales],
+					defaultLocale: this._defaultLocale
+				}
+			} : void 0
 		};
 		return new NextURL(this.href, void 0, config);
 	}
@@ -1359,7 +1368,7 @@ var NextURL = class NextURL {
 	* Matches the Next.js API: `request.nextUrl.buildId`.
 	*/
 	get buildId() {
-		return "9b996ea5-900c-47a3-9efc-0685856b7cbd";
+		return "f7920c77-7878-4ceb-9b43-c9de27e9e1cd";
 	}
 };
 var RequestCookies = class {
@@ -1644,22 +1653,22 @@ function ViewportHead({ viewport }) {
 	if (viewport.minimumScale !== void 0) parts.push(`minimum-scale=${viewport.minimumScale}`);
 	if (viewport.maximumScale !== void 0) parts.push(`maximum-scale=${viewport.maximumScale}`);
 	if (viewport.userScalable !== void 0) parts.push(`user-scalable=${viewport.userScalable ? "yes" : "no"}`);
-	if (parts.length > 0) elements.push(/* @__PURE__ */ (0, import_jsx_runtime_react_server.jsx)("meta", {
+	if (parts.length > 0) elements.push(/* @__PURE__ */(0, import_jsx_runtime_react_server.jsx)("meta", {
 		name: "viewport",
 		content: parts.join(", ")
 	}, key++));
 	if (viewport.themeColor) {
-		if (typeof viewport.themeColor === "string") elements.push(/* @__PURE__ */ (0, import_jsx_runtime_react_server.jsx)("meta", {
+		if (typeof viewport.themeColor === "string") elements.push(/* @__PURE__ */(0, import_jsx_runtime_react_server.jsx)("meta", {
 			name: "theme-color",
 			content: viewport.themeColor
 		}, key++));
-		else if (Array.isArray(viewport.themeColor)) for (const entry of viewport.themeColor) elements.push(/* @__PURE__ */ (0, import_jsx_runtime_react_server.jsx)("meta", {
+		else if (Array.isArray(viewport.themeColor)) for (const entry of viewport.themeColor) elements.push(/* @__PURE__ */(0, import_jsx_runtime_react_server.jsx)("meta", {
 			name: "theme-color",
 			content: entry.color,
 			...entry.media ? { media: entry.media } : {}
 		}, key++));
 	}
-	if (viewport.colorScheme) elements.push(/* @__PURE__ */ (0, import_jsx_runtime_react_server.jsx)("meta", {
+	if (viewport.colorScheme) elements.push(/* @__PURE__ */(0, import_jsx_runtime_react_server.jsx)("meta", {
 		name: "color-scheme",
 		content: viewport.colorScheme
 	}, key++));
@@ -1743,26 +1752,26 @@ function MetadataHead({ metadata }) {
 		}
 	}
 	const title = typeof metadata.title === "string" ? metadata.title : typeof metadata.title === "object" ? metadata.title.absolute || metadata.title.default : void 0;
-	if (title) elements.push(/* @__PURE__ */ (0, import_jsx_runtime_react_server.jsx)("title", { children: title }, key++));
-	if (metadata.description) elements.push(/* @__PURE__ */ (0, import_jsx_runtime_react_server.jsx)("meta", {
+	if (title) elements.push(/* @__PURE__ */(0, import_jsx_runtime_react_server.jsx)("title", { children: title }, key++));
+	if (metadata.description) elements.push(/* @__PURE__ */(0, import_jsx_runtime_react_server.jsx)("meta", {
 		name: "description",
 		content: metadata.description
 	}, key++));
-	if (metadata.generator) elements.push(/* @__PURE__ */ (0, import_jsx_runtime_react_server.jsx)("meta", {
+	if (metadata.generator) elements.push(/* @__PURE__ */(0, import_jsx_runtime_react_server.jsx)("meta", {
 		name: "generator",
 		content: metadata.generator
 	}, key++));
-	if (metadata.applicationName) elements.push(/* @__PURE__ */ (0, import_jsx_runtime_react_server.jsx)("meta", {
+	if (metadata.applicationName) elements.push(/* @__PURE__ */(0, import_jsx_runtime_react_server.jsx)("meta", {
 		name: "application-name",
 		content: metadata.applicationName
 	}, key++));
-	if (metadata.referrer) elements.push(/* @__PURE__ */ (0, import_jsx_runtime_react_server.jsx)("meta", {
+	if (metadata.referrer) elements.push(/* @__PURE__ */(0, import_jsx_runtime_react_server.jsx)("meta", {
 		name: "referrer",
 		content: metadata.referrer
 	}, key++));
 	if (metadata.keywords) {
 		const kw = Array.isArray(metadata.keywords) ? metadata.keywords.join(",") : metadata.keywords;
-		elements.push(/* @__PURE__ */ (0, import_jsx_runtime_react_server.jsx)("meta", {
+		elements.push(/* @__PURE__ */(0, import_jsx_runtime_react_server.jsx)("meta", {
 			name: "keywords",
 			content: kw
 		}, key++));
@@ -1770,21 +1779,21 @@ function MetadataHead({ metadata }) {
 	if (metadata.authors) {
 		const authorList = Array.isArray(metadata.authors) ? metadata.authors : [metadata.authors];
 		for (const author of authorList) {
-			if (author.name) elements.push(/* @__PURE__ */ (0, import_jsx_runtime_react_server.jsx)("meta", {
+			if (author.name) elements.push(/* @__PURE__ */(0, import_jsx_runtime_react_server.jsx)("meta", {
 				name: "author",
 				content: author.name
 			}, key++));
-			if (author.url) elements.push(/* @__PURE__ */ (0, import_jsx_runtime_react_server.jsx)("link", {
+			if (author.url) elements.push(/* @__PURE__ */(0, import_jsx_runtime_react_server.jsx)("link", {
 				rel: "author",
 				href: author.url
 			}, key++));
 		}
 	}
-	if (metadata.creator) elements.push(/* @__PURE__ */ (0, import_jsx_runtime_react_server.jsx)("meta", {
+	if (metadata.creator) elements.push(/* @__PURE__ */(0, import_jsx_runtime_react_server.jsx)("meta", {
 		name: "creator",
 		content: metadata.creator
 	}, key++));
-	if (metadata.publisher) elements.push(/* @__PURE__ */ (0, import_jsx_runtime_react_server.jsx)("meta", {
+	if (metadata.publisher) elements.push(/* @__PURE__ */(0, import_jsx_runtime_react_server.jsx)("meta", {
 		name: "publisher",
 		content: metadata.publisher
 	}, key++));
@@ -1793,16 +1802,16 @@ function MetadataHead({ metadata }) {
 		if (metadata.formatDetection.telephone === false) parts.push("telephone=no");
 		if (metadata.formatDetection.address === false) parts.push("address=no");
 		if (metadata.formatDetection.email === false) parts.push("email=no");
-		if (parts.length > 0) elements.push(/* @__PURE__ */ (0, import_jsx_runtime_react_server.jsx)("meta", {
+		if (parts.length > 0) elements.push(/* @__PURE__ */(0, import_jsx_runtime_react_server.jsx)("meta", {
 			name: "format-detection",
 			content: parts.join(", ")
 		}, key++));
 	}
-	if (metadata.category) elements.push(/* @__PURE__ */ (0, import_jsx_runtime_react_server.jsx)("meta", {
+	if (metadata.category) elements.push(/* @__PURE__ */(0, import_jsx_runtime_react_server.jsx)("meta", {
 		name: "category",
 		content: metadata.category
 	}, key++));
-	if (metadata.robots) if (typeof metadata.robots === "string") elements.push(/* @__PURE__ */ (0, import_jsx_runtime_react_server.jsx)("meta", {
+	if (metadata.robots) if (typeof metadata.robots === "string") elements.push(/* @__PURE__ */(0, import_jsx_runtime_react_server.jsx)("meta", {
 		name: "robots",
 		content: metadata.robots
 	}, key++));
@@ -1812,11 +1821,11 @@ function MetadataHead({ metadata }) {
 		for (const [k, v] of Object.entries(robotsRest)) if (v === true) robotParts.push(k);
 		else if (v === false) robotParts.push(`no${k}`);
 		else if (typeof v === "string" || typeof v === "number") robotParts.push(`${k}:${v}`);
-		if (robotParts.length > 0) elements.push(/* @__PURE__ */ (0, import_jsx_runtime_react_server.jsx)("meta", {
+		if (robotParts.length > 0) elements.push(/* @__PURE__ */(0, import_jsx_runtime_react_server.jsx)("meta", {
 			name: "robots",
 			content: robotParts.join(", ")
 		}, key++));
-		if (googleBot) if (typeof googleBot === "string") elements.push(/* @__PURE__ */ (0, import_jsx_runtime_react_server.jsx)("meta", {
+		if (googleBot) if (typeof googleBot === "string") elements.push(/* @__PURE__ */(0, import_jsx_runtime_react_server.jsx)("meta", {
 			name: "googlebot",
 			content: googleBot
 		}, key++));
@@ -1825,7 +1834,7 @@ function MetadataHead({ metadata }) {
 			for (const [k, v] of Object.entries(googleBot)) if (v === true) gbParts.push(k);
 			else if (v === false) gbParts.push(`no${k}`);
 			else if (typeof v === "string" || typeof v === "number") gbParts.push(`${k}:${v}`);
-			if (gbParts.length > 0) elements.push(/* @__PURE__ */ (0, import_jsx_runtime_react_server.jsx)("meta", {
+			if (gbParts.length > 0) elements.push(/* @__PURE__ */(0, import_jsx_runtime_react_server.jsx)("meta", {
 				name: "googlebot",
 				content: gbParts.join(", ")
 			}, key++));
@@ -1833,39 +1842,39 @@ function MetadataHead({ metadata }) {
 	}
 	if (metadata.openGraph) {
 		const og = metadata.openGraph;
-		if (og.title) elements.push(/* @__PURE__ */ (0, import_jsx_runtime_react_server.jsx)("meta", {
+		if (og.title) elements.push(/* @__PURE__ */(0, import_jsx_runtime_react_server.jsx)("meta", {
 			property: "og:title",
 			content: og.title
 		}, key++));
-		if (og.description) elements.push(/* @__PURE__ */ (0, import_jsx_runtime_react_server.jsx)("meta", {
+		if (og.description) elements.push(/* @__PURE__ */(0, import_jsx_runtime_react_server.jsx)("meta", {
 			property: "og:description",
 			content: og.description
 		}, key++));
-		if (og.url) elements.push(/* @__PURE__ */ (0, import_jsx_runtime_react_server.jsx)("meta", {
+		if (og.url) elements.push(/* @__PURE__ */(0, import_jsx_runtime_react_server.jsx)("meta", {
 			property: "og:url",
 			content: resolveUrl(og.url)
 		}, key++));
-		if (og.siteName) elements.push(/* @__PURE__ */ (0, import_jsx_runtime_react_server.jsx)("meta", {
+		if (og.siteName) elements.push(/* @__PURE__ */(0, import_jsx_runtime_react_server.jsx)("meta", {
 			property: "og:site_name",
 			content: og.siteName
 		}, key++));
-		if (og.type) elements.push(/* @__PURE__ */ (0, import_jsx_runtime_react_server.jsx)("meta", {
+		if (og.type) elements.push(/* @__PURE__ */(0, import_jsx_runtime_react_server.jsx)("meta", {
 			property: "og:type",
 			content: og.type
 		}, key++));
-		if (og.locale) elements.push(/* @__PURE__ */ (0, import_jsx_runtime_react_server.jsx)("meta", {
+		if (og.locale) elements.push(/* @__PURE__ */(0, import_jsx_runtime_react_server.jsx)("meta", {
 			property: "og:locale",
 			content: og.locale
 		}, key++));
-		if (og.publishedTime) elements.push(/* @__PURE__ */ (0, import_jsx_runtime_react_server.jsx)("meta", {
+		if (og.publishedTime) elements.push(/* @__PURE__ */(0, import_jsx_runtime_react_server.jsx)("meta", {
 			property: "article:published_time",
 			content: og.publishedTime
 		}, key++));
-		if (og.modifiedTime) elements.push(/* @__PURE__ */ (0, import_jsx_runtime_react_server.jsx)("meta", {
+		if (og.modifiedTime) elements.push(/* @__PURE__ */(0, import_jsx_runtime_react_server.jsx)("meta", {
 			property: "article:modified_time",
 			content: og.modifiedTime
 		}, key++));
-		if (og.authors) for (const author of og.authors) elements.push(/* @__PURE__ */ (0, import_jsx_runtime_react_server.jsx)("meta", {
+		if (og.authors) for (const author of og.authors) elements.push(/* @__PURE__ */(0, import_jsx_runtime_react_server.jsx)("meta", {
 			property: "article:author",
 			content: author
 		}, key++));
@@ -1873,20 +1882,20 @@ function MetadataHead({ metadata }) {
 			const imgList = typeof og.images === "string" || og.images instanceof URL ? [{ url: og.images }] : Array.isArray(og.images) ? og.images : [og.images];
 			for (const img of imgList) {
 				const imgUrl = typeof img === "string" || img instanceof URL ? img : img.url;
-				elements.push(/* @__PURE__ */ (0, import_jsx_runtime_react_server.jsx)("meta", {
+				elements.push(/* @__PURE__ */(0, import_jsx_runtime_react_server.jsx)("meta", {
 					property: "og:image",
 					content: resolveUrl(imgUrl)
 				}, key++));
 				if (typeof img !== "string" && !(img instanceof URL)) {
-					if (img.width) elements.push(/* @__PURE__ */ (0, import_jsx_runtime_react_server.jsx)("meta", {
+					if (img.width) elements.push(/* @__PURE__ */(0, import_jsx_runtime_react_server.jsx)("meta", {
 						property: "og:image:width",
 						content: String(img.width)
 					}, key++));
-					if (img.height) elements.push(/* @__PURE__ */ (0, import_jsx_runtime_react_server.jsx)("meta", {
+					if (img.height) elements.push(/* @__PURE__ */(0, import_jsx_runtime_react_server.jsx)("meta", {
 						property: "og:image:height",
 						content: String(img.height)
 					}, key++));
-					if (img.alt) elements.push(/* @__PURE__ */ (0, import_jsx_runtime_react_server.jsx)("meta", {
+					if (img.alt) elements.push(/* @__PURE__ */(0, import_jsx_runtime_react_server.jsx)("meta", {
 						property: "og:image:alt",
 						content: img.alt
 					}, key++));
@@ -1894,51 +1903,51 @@ function MetadataHead({ metadata }) {
 			}
 		}
 		if (og.videos) for (const video of og.videos) {
-			elements.push(/* @__PURE__ */ (0, import_jsx_runtime_react_server.jsx)("meta", {
+			elements.push(/* @__PURE__ */(0, import_jsx_runtime_react_server.jsx)("meta", {
 				property: "og:video",
 				content: resolveUrl(video.url)
 			}, key++));
-			if (video.width) elements.push(/* @__PURE__ */ (0, import_jsx_runtime_react_server.jsx)("meta", {
+			if (video.width) elements.push(/* @__PURE__ */(0, import_jsx_runtime_react_server.jsx)("meta", {
 				property: "og:video:width",
 				content: String(video.width)
 			}, key++));
-			if (video.height) elements.push(/* @__PURE__ */ (0, import_jsx_runtime_react_server.jsx)("meta", {
+			if (video.height) elements.push(/* @__PURE__ */(0, import_jsx_runtime_react_server.jsx)("meta", {
 				property: "og:video:height",
 				content: String(video.height)
 			}, key++));
 		}
-		if (og.audio) for (const audio of og.audio) elements.push(/* @__PURE__ */ (0, import_jsx_runtime_react_server.jsx)("meta", {
+		if (og.audio) for (const audio of og.audio) elements.push(/* @__PURE__ */(0, import_jsx_runtime_react_server.jsx)("meta", {
 			property: "og:audio",
 			content: resolveUrl(audio.url)
 		}, key++));
 	}
 	if (metadata.twitter) {
 		const tw = metadata.twitter;
-		if (tw.card) elements.push(/* @__PURE__ */ (0, import_jsx_runtime_react_server.jsx)("meta", {
+		if (tw.card) elements.push(/* @__PURE__ */(0, import_jsx_runtime_react_server.jsx)("meta", {
 			name: "twitter:card",
 			content: tw.card
 		}, key++));
-		if (tw.site) elements.push(/* @__PURE__ */ (0, import_jsx_runtime_react_server.jsx)("meta", {
+		if (tw.site) elements.push(/* @__PURE__ */(0, import_jsx_runtime_react_server.jsx)("meta", {
 			name: "twitter:site",
 			content: tw.site
 		}, key++));
-		if (tw.siteId) elements.push(/* @__PURE__ */ (0, import_jsx_runtime_react_server.jsx)("meta", {
+		if (tw.siteId) elements.push(/* @__PURE__ */(0, import_jsx_runtime_react_server.jsx)("meta", {
 			name: "twitter:site:id",
 			content: tw.siteId
 		}, key++));
-		if (tw.title) elements.push(/* @__PURE__ */ (0, import_jsx_runtime_react_server.jsx)("meta", {
+		if (tw.title) elements.push(/* @__PURE__ */(0, import_jsx_runtime_react_server.jsx)("meta", {
 			name: "twitter:title",
 			content: tw.title
 		}, key++));
-		if (tw.description) elements.push(/* @__PURE__ */ (0, import_jsx_runtime_react_server.jsx)("meta", {
+		if (tw.description) elements.push(/* @__PURE__ */(0, import_jsx_runtime_react_server.jsx)("meta", {
 			name: "twitter:description",
 			content: tw.description
 		}, key++));
-		if (tw.creator) elements.push(/* @__PURE__ */ (0, import_jsx_runtime_react_server.jsx)("meta", {
+		if (tw.creator) elements.push(/* @__PURE__ */(0, import_jsx_runtime_react_server.jsx)("meta", {
 			name: "twitter:creator",
 			content: tw.creator
 		}, key++));
-		if (tw.creatorId) elements.push(/* @__PURE__ */ (0, import_jsx_runtime_react_server.jsx)("meta", {
+		if (tw.creatorId) elements.push(/* @__PURE__ */(0, import_jsx_runtime_react_server.jsx)("meta", {
 			name: "twitter:creator:id",
 			content: tw.creatorId
 		}, key++));
@@ -1946,11 +1955,11 @@ function MetadataHead({ metadata }) {
 			const imgList = typeof tw.images === "string" || tw.images instanceof URL ? [tw.images] : Array.isArray(tw.images) ? tw.images : [tw.images];
 			for (const img of imgList) {
 				const imgUrl = typeof img === "string" || img instanceof URL ? img : img.url;
-				elements.push(/* @__PURE__ */ (0, import_jsx_runtime_react_server.jsx)("meta", {
+				elements.push(/* @__PURE__ */(0, import_jsx_runtime_react_server.jsx)("meta", {
 					name: "twitter:image",
 					content: resolveUrl(imgUrl)
 				}, key++));
-				if (typeof img !== "string" && !(img instanceof URL) && img.alt) elements.push(/* @__PURE__ */ (0, import_jsx_runtime_react_server.jsx)("meta", {
+				if (typeof img !== "string" && !(img instanceof URL) && img.alt) elements.push(/* @__PURE__ */(0, import_jsx_runtime_react_server.jsx)("meta", {
 					name: "twitter:image:alt",
 					content: img.alt
 				}, key++));
@@ -1961,19 +1970,19 @@ function MetadataHead({ metadata }) {
 			for (const player of players) {
 				const playerUrl = player.playerUrl.toString();
 				const streamUrl = player.streamUrl.toString();
-				elements.push(/* @__PURE__ */ (0, import_jsx_runtime_react_server.jsx)("meta", {
+				elements.push(/* @__PURE__ */(0, import_jsx_runtime_react_server.jsx)("meta", {
 					name: "twitter:player",
 					content: resolveUrl(playerUrl)
 				}, key++));
-				elements.push(/* @__PURE__ */ (0, import_jsx_runtime_react_server.jsx)("meta", {
+				elements.push(/* @__PURE__ */(0, import_jsx_runtime_react_server.jsx)("meta", {
 					name: "twitter:player:stream",
 					content: resolveUrl(streamUrl)
 				}, key++));
-				elements.push(/* @__PURE__ */ (0, import_jsx_runtime_react_server.jsx)("meta", {
+				elements.push(/* @__PURE__ */(0, import_jsx_runtime_react_server.jsx)("meta", {
 					name: "twitter:player:width",
 					content: String(player.width)
 				}, key++));
-				elements.push(/* @__PURE__ */ (0, import_jsx_runtime_react_server.jsx)("meta", {
+				elements.push(/* @__PURE__ */(0, import_jsx_runtime_react_server.jsx)("meta", {
 					name: "twitter:player:height",
 					content: String(player.height)
 				}, key++));
@@ -1986,17 +1995,17 @@ function MetadataHead({ metadata }) {
 				"ipad",
 				"googleplay"
 			]) {
-				if (app.name) elements.push(/* @__PURE__ */ (0, import_jsx_runtime_react_server.jsx)("meta", {
+				if (app.name) elements.push(/* @__PURE__ */(0, import_jsx_runtime_react_server.jsx)("meta", {
 					name: `twitter:app:name:${platform}`,
 					content: app.name
 				}, key++));
-				if (app.id[platform] !== void 0) elements.push(/* @__PURE__ */ (0, import_jsx_runtime_react_server.jsx)("meta", {
+				if (app.id[platform] !== void 0) elements.push(/* @__PURE__ */(0, import_jsx_runtime_react_server.jsx)("meta", {
 					name: `twitter:app:id:${platform}`,
 					content: String(app.id[platform])
 				}, key++));
 				if (app.url?.[platform] !== void 0) {
 					const appUrl = app.url[platform].toString();
-					elements.push(/* @__PURE__ */ (0, import_jsx_runtime_react_server.jsx)("meta", {
+					elements.push(/* @__PURE__ */(0, import_jsx_runtime_react_server.jsx)("meta", {
 						name: `twitter:app:url:${platform}`,
 						content: resolveUrl(appUrl)
 					}, key++));
@@ -2008,14 +2017,14 @@ function MetadataHead({ metadata }) {
 		const { icon, shortcut, apple, other } = metadata.icons;
 		if (shortcut) {
 			const shortcuts = Array.isArray(shortcut) ? shortcut : [shortcut];
-			for (const s of shortcuts) elements.push(/* @__PURE__ */ (0, import_jsx_runtime_react_server.jsx)("link", {
+			for (const s of shortcuts) elements.push(/* @__PURE__ */(0, import_jsx_runtime_react_server.jsx)("link", {
 				rel: "shortcut icon",
 				href: resolveUrl(s)
 			}, key++));
 		}
 		if (icon) {
 			const icons = typeof icon === "string" || icon instanceof URL ? [{ url: icon }] : icon;
-			for (const i of icons) elements.push(/* @__PURE__ */ (0, import_jsx_runtime_react_server.jsx)("link", {
+			for (const i of icons) elements.push(/* @__PURE__ */(0, import_jsx_runtime_react_server.jsx)("link", {
 				rel: "icon",
 				href: resolveUrl(i.url),
 				...i.sizes ? { sizes: i.sizes } : {},
@@ -2025,40 +2034,40 @@ function MetadataHead({ metadata }) {
 		}
 		if (apple) {
 			const apples = typeof apple === "string" || apple instanceof URL ? [{ url: apple }] : apple;
-			for (const a of apples) elements.push(/* @__PURE__ */ (0, import_jsx_runtime_react_server.jsx)("link", {
+			for (const a of apples) elements.push(/* @__PURE__ */(0, import_jsx_runtime_react_server.jsx)("link", {
 				rel: "apple-touch-icon",
 				href: resolveUrl(a.url),
 				...a.sizes ? { sizes: a.sizes } : {},
 				...a.type ? { type: a.type } : {}
 			}, key++));
 		}
-		if (other) for (const o of other) elements.push(/* @__PURE__ */ (0, import_jsx_runtime_react_server.jsx)("link", {
+		if (other) for (const o of other) elements.push(/* @__PURE__ */(0, import_jsx_runtime_react_server.jsx)("link", {
 			rel: o.rel,
 			href: resolveUrl(o.url),
 			...o.sizes ? { sizes: o.sizes } : {}
 		}, key++));
 	}
-	if (metadata.manifest) elements.push(/* @__PURE__ */ (0, import_jsx_runtime_react_server.jsx)("link", {
+	if (metadata.manifest) elements.push(/* @__PURE__ */(0, import_jsx_runtime_react_server.jsx)("link", {
 		rel: "manifest",
 		href: resolveUrl(metadata.manifest)
 	}, key++));
 	if (metadata.alternates) {
 		const alt = metadata.alternates;
-		if (alt.canonical) elements.push(/* @__PURE__ */ (0, import_jsx_runtime_react_server.jsx)("link", {
+		if (alt.canonical) elements.push(/* @__PURE__ */(0, import_jsx_runtime_react_server.jsx)("link", {
 			rel: "canonical",
 			href: resolveUrl(alt.canonical)
 		}, key++));
-		if (alt.languages) for (const [lang, href] of Object.entries(alt.languages)) elements.push(/* @__PURE__ */ (0, import_jsx_runtime_react_server.jsx)("link", {
+		if (alt.languages) for (const [lang, href] of Object.entries(alt.languages)) elements.push(/* @__PURE__ */(0, import_jsx_runtime_react_server.jsx)("link", {
 			rel: "alternate",
 			hrefLang: lang,
 			href: resolveUrl(href)
 		}, key++));
-		if (alt.media) for (const [media, href] of Object.entries(alt.media)) elements.push(/* @__PURE__ */ (0, import_jsx_runtime_react_server.jsx)("link", {
+		if (alt.media) for (const [media, href] of Object.entries(alt.media)) elements.push(/* @__PURE__ */(0, import_jsx_runtime_react_server.jsx)("link", {
 			rel: "alternate",
 			media,
 			href: resolveUrl(href)
 		}, key++));
-		if (alt.types) for (const [type, href] of Object.entries(alt.types)) elements.push(/* @__PURE__ */ (0, import_jsx_runtime_react_server.jsx)("link", {
+		if (alt.types) for (const [type, href] of Object.entries(alt.types)) elements.push(/* @__PURE__ */(0, import_jsx_runtime_react_server.jsx)("link", {
 			rel: "alternate",
 			type,
 			href: resolveUrl(href)
@@ -2066,21 +2075,21 @@ function MetadataHead({ metadata }) {
 	}
 	if (metadata.verification) {
 		const v = metadata.verification;
-		if (v.google) elements.push(/* @__PURE__ */ (0, import_jsx_runtime_react_server.jsx)("meta", {
+		if (v.google) elements.push(/* @__PURE__ */(0, import_jsx_runtime_react_server.jsx)("meta", {
 			name: "google-site-verification",
 			content: v.google
 		}, key++));
-		if (v.yahoo) elements.push(/* @__PURE__ */ (0, import_jsx_runtime_react_server.jsx)("meta", {
+		if (v.yahoo) elements.push(/* @__PURE__ */(0, import_jsx_runtime_react_server.jsx)("meta", {
 			name: "y_key",
 			content: v.yahoo
 		}, key++));
-		if (v.yandex) elements.push(/* @__PURE__ */ (0, import_jsx_runtime_react_server.jsx)("meta", {
+		if (v.yandex) elements.push(/* @__PURE__ */(0, import_jsx_runtime_react_server.jsx)("meta", {
 			name: "yandex-verification",
 			content: v.yandex
 		}, key++));
 		if (v.other) for (const [name, content] of Object.entries(v.other)) {
 			const values = Array.isArray(content) ? content : [content];
-			for (const val of values) elements.push(/* @__PURE__ */ (0, import_jsx_runtime_react_server.jsx)("meta", {
+			for (const val of values) elements.push(/* @__PURE__ */(0, import_jsx_runtime_react_server.jsx)("meta", {
 				name,
 				content: val
 			}, key++));
@@ -2088,21 +2097,21 @@ function MetadataHead({ metadata }) {
 	}
 	if (metadata.appleWebApp) {
 		const awa = metadata.appleWebApp;
-		if (awa.capable !== false) elements.push(/* @__PURE__ */ (0, import_jsx_runtime_react_server.jsx)("meta", {
+		if (awa.capable !== false) elements.push(/* @__PURE__ */(0, import_jsx_runtime_react_server.jsx)("meta", {
 			name: "mobile-web-app-capable",
 			content: "yes"
 		}, key++));
-		if (awa.title) elements.push(/* @__PURE__ */ (0, import_jsx_runtime_react_server.jsx)("meta", {
+		if (awa.title) elements.push(/* @__PURE__ */(0, import_jsx_runtime_react_server.jsx)("meta", {
 			name: "apple-mobile-web-app-title",
 			content: awa.title
 		}, key++));
-		if (awa.statusBarStyle) elements.push(/* @__PURE__ */ (0, import_jsx_runtime_react_server.jsx)("meta", {
+		if (awa.statusBarStyle) elements.push(/* @__PURE__ */(0, import_jsx_runtime_react_server.jsx)("meta", {
 			name: "apple-mobile-web-app-status-bar-style",
 			content: awa.statusBarStyle
 		}, key++));
 		if (awa.startupImage) {
 			const imgs = typeof awa.startupImage === "string" ? [{ url: awa.startupImage }] : awa.startupImage;
-			for (const img of imgs) elements.push(/* @__PURE__ */ (0, import_jsx_runtime_react_server.jsx)("link", {
+			for (const img of imgs) elements.push(/* @__PURE__ */(0, import_jsx_runtime_react_server.jsx)("link", {
 				rel: "apple-touch-startup-image",
 				href: resolveUrl(img.url),
 				...img.media ? { media: img.media } : {}
@@ -2113,7 +2122,7 @@ function MetadataHead({ metadata }) {
 		const { appId, appArgument } = metadata.itunes;
 		let content = `app-id=${appId}`;
 		if (appArgument) content += `, app-argument=${appArgument}`;
-		elements.push(/* @__PURE__ */ (0, import_jsx_runtime_react_server.jsx)("meta", {
+		elements.push(/* @__PURE__ */(0, import_jsx_runtime_react_server.jsx)("meta", {
 			name: "apple-itunes-app",
 			content
 		}, key++));
@@ -2137,7 +2146,7 @@ function MetadataHead({ metadata }) {
 				if (v === void 0 || v === null) continue;
 				const str = String(v);
 				const content = k === "url" ? resolveUrl(str) : str;
-				elements.push(/* @__PURE__ */ (0, import_jsx_runtime_react_server.jsx)("meta", {
+				elements.push(/* @__PURE__ */(0, import_jsx_runtime_react_server.jsx)("meta", {
 					property: `al:${platform}:${k}`,
 					content
 				}, key++));
@@ -2146,7 +2155,7 @@ function MetadataHead({ metadata }) {
 	}
 	if (metadata.other) for (const [name, content] of Object.entries(metadata.other)) {
 		const values = Array.isArray(content) ? content : [content];
-		for (const val of values) elements.push(/* @__PURE__ */ (0, import_jsx_runtime_react_server.jsx)("meta", {
+		for (const val of values) elements.push(/* @__PURE__ */(0, import_jsx_runtime_react_server.jsx)("meta", {
 			name,
 			content: val
 		}, key++));
@@ -2619,7 +2628,7 @@ function matchConfigPattern(pathname, pattern) {
 		const params = Object.create(null);
 		for (let i = 0; i < compiled.paramNames.length; i++) params[compiled.paramNames[i]] = match[i + 1] ?? "";
 		return params;
-	} catch {}
+	} catch { }
 	const catchAllMatch = pattern.match(/:([\w-]+)(\*|\+)$/);
 	if (catchAllMatch) {
 		const prefix = pattern.slice(0, pattern.lastIndexOf(":"));
@@ -2971,47 +2980,51 @@ function createTrackedAppRouteRequest(request, options = {}) {
 		options.onDynamicAccess?.(access);
 	};
 	const wrapNextUrl = (nextUrl) => {
-		return new Proxy(nextUrl, { get(target, prop) {
-			switch (prop) {
-				case "search":
-				case "searchParams":
-				case "url":
-				case "href":
-				case "toJSON":
-				case "toString":
-				case "origin":
-					markDynamicAccess(`nextUrl.${String(prop)}`);
-					return bindMethodIfNeeded(Reflect.get(target, prop, target), target);
-				case "clone": return () => wrapNextUrl(target.clone());
-				default: return bindMethodIfNeeded(Reflect.get(target, prop, target), target);
+		return new Proxy(nextUrl, {
+			get(target, prop) {
+				switch (prop) {
+					case "search":
+					case "searchParams":
+					case "url":
+					case "href":
+					case "toJSON":
+					case "toString":
+					case "origin":
+						markDynamicAccess(`nextUrl.${String(prop)}`);
+						return bindMethodIfNeeded(Reflect.get(target, prop, target), target);
+					case "clone": return () => wrapNextUrl(target.clone());
+					default: return bindMethodIfNeeded(Reflect.get(target, prop, target), target);
+				}
 			}
-		} });
+		});
 	};
 	const wrapRequest = (input) => {
 		const requestHeaders = options.middlewareHeaders ? buildRequestHeadersFromMiddlewareResponse(input.headers, options.middlewareHeaders) : null;
 		const requestWithOverrides = requestHeaders ? rebuildRequestWithHeaders(input, requestHeaders) : input;
 		const nextRequest = requestWithOverrides instanceof NextRequest ? requestWithOverrides : new NextRequest(requestWithOverrides, { nextConfig: nextConfig ?? void 0 });
 		let proxiedNextUrl = null;
-		return new Proxy(nextRequest, { get(target, prop) {
-			switch (prop) {
-				case "nextUrl":
-					proxiedNextUrl ??= wrapNextUrl(target.nextUrl);
-					return proxiedNextUrl;
-				case "headers":
-				case "cookies":
-				case "url":
-				case "body":
-				case "blob":
-				case "json":
-				case "text":
-				case "arrayBuffer":
-				case "formData":
-					markDynamicAccess(`request.${String(prop)}`);
-					return bindMethodIfNeeded(Reflect.get(target, prop, target), target);
-				case "clone": return () => wrapRequest(target.clone());
-				default: return bindMethodIfNeeded(Reflect.get(target, prop, target), target);
+		return new Proxy(nextRequest, {
+			get(target, prop) {
+				switch (prop) {
+					case "nextUrl":
+						proxiedNextUrl ??= wrapNextUrl(target.nextUrl);
+						return proxiedNextUrl;
+					case "headers":
+					case "cookies":
+					case "url":
+					case "body":
+					case "blob":
+					case "json":
+					case "text":
+					case "arrayBuffer":
+					case "formData":
+						markDynamicAccess(`request.${String(prop)}`);
+						return bindMethodIfNeeded(Reflect.get(target, prop, target), target);
+					case "clone": return () => wrapRequest(target.clone());
+					default: return bindMethodIfNeeded(Reflect.get(target, prop, target), target);
+				}
 			}
-		} });
+		});
 	};
 	return {
 		request: wrapRequest(request),
@@ -3367,7 +3380,7 @@ var MemoryCacheHandler = class {
 		const now = Date.now();
 		for (const tag of tagList) this.tagRevalidatedAt.set(tag, now);
 	}
-	resetRequestCache() {}
+	resetRequestCache() { }
 };
 var _HANDLER_KEY = Symbol.for("vinext.cacheHandler");
 var _gHandler = globalThis;
@@ -3519,7 +3532,7 @@ function finalizeAppPageHtmlCacheResponse(response, options) {
 			const reader = streamForCache.getReader();
 			const decoder = new TextDecoder();
 			const chunks = [];
-			for (;;) {
+			for (; ;) {
 				const { done, value } = await reader.read();
 				if (done) break;
 				chunks.push(decoder.decode(value, { stream: true }));
@@ -3655,7 +3668,7 @@ async function probeAppPageComponent(options) {
 		try {
 			const pageResult = options.probePage();
 			if (isPromiseLike(pageResult)) if (options.awaitAsyncResult) await pageResult;
-			else Promise.resolve(pageResult).catch(() => {});
+			else Promise.resolve(pageResult).catch(() => { });
 		} catch (error) {
 			return options.onError(error);
 		}
@@ -3666,7 +3679,7 @@ async function readAppPageTextStream(stream) {
 	const reader = stream.getReader();
 	const decoder = new TextDecoder();
 	const chunks = [];
-	for (;;) {
+	for (; ;) {
 		const { done, value } = await reader.read();
 		if (done) break;
 		chunks.push(decoder.decode(value, { stream: true }));
@@ -3678,7 +3691,7 @@ async function readAppPageBinaryStream(stream) {
 	const reader = stream.getReader();
 	const chunks = [];
 	let totalLength = 0;
-	for (;;) {
+	for (; ;) {
 		const { done, value } = await reader.read();
 		if (done) break;
 		chunks.push(value);
@@ -3901,11 +3914,13 @@ function createAppPageParallelSlotEntries(layoutIndex, layoutEntries, route, get
 	return Object.keys(parallelSlots).length > 0 ? parallelSlots : void 0;
 }
 function createAppPageRouteHead(metadata, viewport) {
-	return /* @__PURE__ */ (0, import_jsx_runtime_react_server.jsxs)(import_jsx_runtime_react_server.Fragment, { children: [
+	return /* @__PURE__ */ (0, import_jsx_runtime_react_server.jsxs)(import_jsx_runtime_react_server.Fragment, {
+		children: [
 		/* @__PURE__ */ (0, import_jsx_runtime_react_server.jsx)("meta", { charSet: "utf-8" }),
-		metadata ? /* @__PURE__ */ (0, import_jsx_runtime_react_server.jsx)(MetadataHead, { metadata }) : null,
+			metadata ? /* @__PURE__ */ (0, import_jsx_runtime_react_server.jsx)(MetadataHead, { metadata }) : null,
 		/* @__PURE__ */ (0, import_jsx_runtime_react_server.jsx)(ViewportHead, { viewport })
-	] });
+		]
+	});
 }
 function buildAppPageElements(options) {
 	const elements = {};
@@ -3968,7 +3983,7 @@ function buildAppPageElements(options) {
 		if (!templateComponent) continue;
 		const TemplateComponent = templateComponent;
 		const templateDependency = templateDependenciesById.get(templateEntry.id);
-		const templateElement = templateDependency ? renderWithAppDependencyBarrier(/* @__PURE__ */ (0, import_jsx_runtime_react_server.jsx)(TemplateComponent, {
+		const templateElement = templateDependency ? renderWithAppDependencyBarrier(/* @__PURE__ */(0, import_jsx_runtime_react_server.jsx)(TemplateComponent, {
 			params: options.matchedParams,
 			children: /* @__PURE__ */ (0, import_jsx_runtime_react_server.jsx)(Children, {})
 		}), templateDependency) : /* @__PURE__ */ (0, import_jsx_runtime_react_server.jsx)(TemplateComponent, {
@@ -3989,7 +4004,7 @@ function buildAppPageElements(options) {
 		}
 		const LayoutComponent = layoutComponent;
 		const layoutDependency = layoutDependenciesByIndex.get(index);
-		const layoutElement = layoutDependency ? renderWithAppDependencyBarrier(/* @__PURE__ */ (0, import_jsx_runtime_react_server.jsx)(LayoutComponent, {
+		const layoutElement = layoutDependency ? renderWithAppDependencyBarrier(/* @__PURE__ */(0, import_jsx_runtime_react_server.jsx)(LayoutComponent, {
 			...layoutProps,
 			children: /* @__PURE__ */ (0, import_jsx_runtime_react_server.jsx)(Children, {})
 		}), layoutDependency) : /* @__PURE__ */ (0, import_jsx_runtime_react_server.jsx)(LayoutComponent, {
@@ -4198,9 +4213,11 @@ function deferUntilStreamConsumed(stream, onFlush) {
 			onFlush();
 		}
 	};
-	const cleanup = new TransformStream({ flush() {
-		once();
-	} });
+	const cleanup = new TransformStream({
+		flush() {
+			once();
+		}
+	});
 	const reader = stream.pipeThrough(cleanup).getReader();
 	return new ReadableStream({
 		pull(controller) {
@@ -5058,7 +5075,7 @@ async function readRequestBodyChunksWithinLimit(request) {
 			chunks.push(value);
 		}
 	} catch (err) {
-		reader.cancel().catch(() => {});
+		reader.cancel().catch(() => { });
 		throw err;
 	}
 	return {
@@ -5133,7 +5150,7 @@ async function serializeBody(input, init) {
 		let chunks;
 		let contentType;
 		try {
-			({chunks, contentType} = await readRequestBodyChunksWithinLimit(input));
+			({ chunks, contentType } = await readRequestBodyChunksWithinLimit(input));
 		} catch (err) {
 			if (err instanceof BodyTooLargeForCacheKeyError) throw err;
 			throw new SkipCacheKeyGenerationError();
@@ -5871,11 +5888,13 @@ function createFontLoader(family) {
 		};
 	};
 }
-var googleFonts = new Proxy({}, { get(_target, prop) {
-	if (prop === "__esModule") return true;
-	if (prop === "default") return googleFonts;
-	return createFontLoader(prop.replace(/_/g, " ").replace(/([a-z])([A-Z])/g, "$1 $2"));
-} });
+var googleFonts = new Proxy({}, {
+	get(_target, prop) {
+		if (prop === "__esModule") return true;
+		if (prop === "default") return googleFonts;
+		return createFontLoader(prop.replace(/_/g, " ").replace(/([a-z])([A-Z])/g, "$1 $2"));
+	}
+});
 //#endregion
 //#region node_modules/vinext/dist/shims/font-local.js
 var ssrFontStyles = [];
@@ -5986,10 +6005,12 @@ var route_exports = /* @__PURE__ */ __exportAll({ GET: () => GET });
 async function GET(req) {
 	console.log("request for profile");
 	const token = req.headers.get("authorization") || "";
-	const res = await fetch("https://api.crescentlearning.org/profile", { headers: {
-		Accept: "application/json",
-		Authorization: token
-	} });
+	const res = await fetch("https://api.crescentlearning.org/profile", {
+		headers: {
+			Accept: "application/json",
+			Authorization: token
+		}
+	});
 	const data = await res.json();
 	console.log("route.ts - Profile response: ", data);
 	return NextResponse.json(data, { status: res.status });
@@ -6128,7 +6149,7 @@ function __isrFnv1a64(s) {
 }
 function __isrCacheKey(pathname, suffix) {
 	const normalized = pathname === "/" ? "/" : pathname.replace(/\/$/, "");
-	const prefix = "app:9b996ea5-900c-47a3-9efc-0685856b7cbd";
+	const prefix = "app:f7920c77-7878-4ceb-9b43-c9de27e9e1cd";
 	const key = prefix + ":" + normalized + ":" + suffix;
 	if (key.length <= 200) return key;
 	return prefix + ":__hash:" + __isrFnv1a64(normalized) + ":" + suffix;
@@ -6148,7 +6169,7 @@ function __isrRouteKey(pathname) {
 	return __isrCacheKey(pathname, "route");
 }
 var __isrDebug = process.env.NEXT_PRIVATE_DEBUG_CACHE ? console.debug.bind(console, "[vinext] ISR:") : void 0;
-var __classDebug = process.env.VINEXT_DEBUG_CLASSIFICATION ? function(layoutId, reason) {
+var __classDebug = process.env.VINEXT_DEBUG_CLASSIFICATION ? function (layoutId, reason) {
 	console.debug("[vinext] CLS:", layoutId, reason);
 } : void 0;
 function makeThenableParams(obj) {
@@ -6184,15 +6205,17 @@ function createRscOnErrorHandler(request, pathname, routePath) {
 		routePath: routePath || pathname,
 		routeType: "render"
 	};
-	return function(error) {
+	return function (error) {
 		return rscOnError(error, requestInfo, errorContext);
 	};
 }
-function __VINEXT_CLASS(routeIdx) { return ((routeIdx) => {
-    switch (routeIdx) {
-      default: return null;
-    }
-  })(routeIdx); }
+function __VINEXT_CLASS(routeIdx) {
+	return ((routeIdx) => {
+		switch (routeIdx) {
+			default: return null;
+		}
+	})(routeIdx);
+}
 function __VINEXT_CLASS_REASONS(routeIdx) {
 	return null;
 }
@@ -6624,7 +6647,7 @@ async function buildPageElements(route, params, routePath, pageRequest) {
 	const layoutMods = route.layouts.filter(Boolean);
 	const spObj = Object.create(null);
 	let hasSearchParams = false;
-	if (searchParams && searchParams.forEach) searchParams.forEach(function(v, k) {
+	if (searchParams && searchParams.forEach) searchParams.forEach(function (v, k) {
 		hasSearchParams = true;
 		if (k in spObj) spObj[k] = Array.isArray(spObj[k]) ? spObj[k].concat(v) : [spObj[k], v];
 		else spObj[k] = v;
@@ -6673,11 +6696,13 @@ async function buildPageElements(route, params, routePath, pageRequest) {
 		routePath,
 		rootNotFoundModule: null,
 		route,
-		slotOverrides: opts && opts.interceptSlotKey && opts.interceptPage ? { [opts.interceptSlotKey]: {
-			layoutModules: opts.interceptLayouts || null,
-			pageModule: opts.interceptPage,
-			params: opts.interceptParams || params
-		} } : null
+		slotOverrides: opts && opts.interceptSlotKey && opts.interceptPage ? {
+			[opts.interceptSlotKey]: {
+				layoutModules: opts.interceptLayouts || null,
+				pageModule: opts.interceptPage,
+				params: opts.interceptParams || params
+			}
+		} : null
 	});
 }
 var __basePath = "";
@@ -6714,7 +6739,7 @@ function __normalizePath(pathname) {
 }
 var __pathDelimiterRegex = /([/#?\\]|%(2f|23|3f|5c))/gi;
 function __decodeRouteSegment(segment) {
-	return decodeURIComponent(segment).replace(__pathDelimiterRegex, function(char) {
+	return decodeURIComponent(segment).replace(__pathDelimiterRegex, function (char) {
 		return encodeURIComponent(char);
 	});
 }
@@ -6774,7 +6799,7 @@ async function __readBodyWithLimit(request, maxBytes) {
 	var decoder = new TextDecoder();
 	var chunks = [];
 	var totalSize = 0;
-	for (;;) {
+	for (; ;) {
 		var result = await reader.read();
 		if (result.done) break;
 		totalSize += result.value.byteLength;
@@ -6797,7 +6822,7 @@ async function __readFormDataWithLimit(request, maxBytes) {
 	var reader = request.body.getReader();
 	var chunks = [];
 	var totalSize = 0;
-	for (;;) {
+	for (; ;) {
 		var result = await reader.read();
 		if (result.done) break;
 		totalSize += result.value.byteLength;
@@ -6929,7 +6954,7 @@ async function _handleRequest(request, __reqCtx, _mwCtx) {
 			if (cleanPathname.startsWith(sitemapPrefix + "/") && cleanPathname.endsWith(".xml")) {
 				const rawId = cleanPathname.slice(sitemapPrefix.length + 1, -4);
 				if (rawId.includes("/")) continue;
-				const matched = (await metaRoute.module.generateSitemaps()).find(function(s) {
+				const matched = (await metaRoute.module.generateSitemaps()).find(function (s) {
 					return String(s.id) === rawId;
 				});
 				if (!matched) return new Response("Not Found", { status: 404 });
@@ -6960,10 +6985,12 @@ async function _handleRequest(request, __reqCtx, _mwCtx) {
 			const binary = atob(metaRoute.fileDataBase64);
 			const bytes = new Uint8Array(binary.length);
 			for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
-			return new Response(bytes, { headers: {
-				"Content-Type": metaRoute.contentType,
-				"Cache-Control": "public, max-age=0, must-revalidate"
-			} });
+			return new Response(bytes, {
+				headers: {
+					"Content-Type": metaRoute.contentType,
+					"Cache-Control": "public, max-age=0, must-revalidate"
+				}
+			});
 		} catch {
 			return new Response("Not Found", { status: 404 });
 		}
@@ -7230,7 +7257,7 @@ async function _handleRequest(request, __reqCtx, _mwCtx) {
 				basePath: __basePath,
 				buildPageCacheTags: __pageCacheTags,
 				cleanPathname,
-				clearRequestContext: function() {
+				clearRequestContext: function () {
 					setHeadersContext(null);
 					setNavigationContext(null);
 				},
@@ -7250,7 +7277,7 @@ async function _handleRequest(request, __reqCtx, _mwCtx) {
 				revalidateSearchParams: url.searchParams,
 				revalidateSeconds,
 				routePattern: route.pattern,
-				runInRevalidationContext: async function(renderFn) {
+				runInRevalidationContext: async function (renderFn) {
 					await runWithRequestContext(createRequestContext({
 						headersContext: {
 							headers: new Headers(),
@@ -7271,7 +7298,7 @@ async function _handleRequest(request, __reqCtx, _mwCtx) {
 			basePath: __basePath,
 			buildPageCacheTags: __pageCacheTags,
 			cleanPathname,
-			clearRequestContext: function() {
+			clearRequestContext: function () {
 				setHeadersContext(null);
 				setNavigationContext(null);
 			},
@@ -7342,7 +7369,7 @@ async function _handleRequest(request, __reqCtx, _mwCtx) {
 	if (!isForceDynamic && (isRscRequest || !_scriptNonce) && revalidateSeconds !== null && revalidateSeconds > 0 && revalidateSeconds !== Infinity) {
 		const __cachedPageResponse = await readAppPageCacheResponse({
 			cleanPathname,
-			clearRequestContext: function() {
+			clearRequestContext: function () {
 				setHeadersContext(null);
 				setNavigationContext(null);
 			},
@@ -7354,7 +7381,7 @@ async function _handleRequest(request, __reqCtx, _mwCtx) {
 			isrSet: __isrSet,
 			mountedSlotsHeader: __mountedSlotsHeader,
 			revalidateSeconds,
-			renderFreshPageForCache: async function() {
+			renderFreshPageForCache: async function () {
 				return runWithRequestContext(createRequestContext({
 					headersContext: {
 						headers: new Headers(),
@@ -7538,7 +7565,7 @@ async function _handleRequest(request, __reqCtx, _mwCtx) {
 		probePage() {
 			if (!PageComponent) return null;
 			const _probeSearchObj = {};
-			url.searchParams.forEach(function(v, k) {
+			url.searchParams.forEach(function (v, k) {
 				if (k in _probeSearchObj) _probeSearchObj[k] = Array.isArray(_probeSearchObj[k]) ? _probeSearchObj[k].concat(v) : [_probeSearchObj[k], v];
 				else _probeSearchObj[k] = v;
 			});
@@ -7613,7 +7640,7 @@ async function _handleRequest(request, __reqCtx, _mwCtx) {
 			});
 		},
 		renderToReadableStream,
-		routeHasLocalBoundary: !!route?.error?.default || !!(route?.errors && route.errors.some(function(e) {
+		routeHasLocalBoundary: !!route?.error?.default || !!(route?.errors && route.errors.some(function (e) {
 			return e?.default;
 		})),
 		routePattern: route.pattern,
@@ -7628,25 +7655,27 @@ async function _handleRequest(request, __reqCtx, _mwCtx) {
 }
 //#endregion
 //#region \0virtual:cloudflare/worker-entry
-var worker_entry_default = { async fetch(request, env, ctx) {
-	const url = new URL(request.url);
-	if (isOpenRedirectShaped(url.pathname)) return new Response("404 Not Found", { status: 404 });
-	try {
-		decodeURIComponent(url.pathname);
-	} catch {
-		return new Response("Bad Request", { status: 400 });
-	}
-	const handleFn = () => handler(request, ctx);
-	const result = await (ctx ? runWithExecutionContext(ctx, handleFn) : handleFn());
-	if (result instanceof Response) {
-		if (env?.ASSETS) {
-			const assetResponse = await resolveStaticAssetSignal(result, { fetchAsset: (path) => Promise.resolve(env.ASSETS.fetch(new Request(new URL(path, request.url)))) });
-			if (assetResponse) return assetResponse;
+var worker_entry_default = {
+	async fetch(request, env, ctx) {
+		const url = new URL(request.url);
+		if (isOpenRedirectShaped(url.pathname)) return new Response("404 Not Found", { status: 404 });
+		try {
+			decodeURIComponent(url.pathname);
+		} catch {
+			return new Response("Bad Request", { status: 400 });
 		}
-		return result;
+		const handleFn = () => handler(request, ctx);
+		const result = await (ctx ? runWithExecutionContext(ctx, handleFn) : handleFn());
+		if (result instanceof Response) {
+			if (env?.ASSETS) {
+				const assetResponse = await resolveStaticAssetSignal(result, { fetchAsset: (path) => Promise.resolve(env.ASSETS.fetch(new Request(new URL(path, request.url)))) });
+				if (assetResponse) return assetResponse;
+			}
+			return result;
+		}
+		if (result === null || result === void 0) return new Response("Not Found", { status: 404 });
+		return new Response(String(result), { status: 200 });
 	}
-	if (result === null || result === void 0) return new Response("Not Found", { status: 404 });
-	return new Response(String(result), { status: 200 });
-} };
+};
 //#endregion
 export { worker_entry_default as default };
