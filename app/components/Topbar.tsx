@@ -1,7 +1,7 @@
 import { Link } from "lucide-react";
 import { useEffect, useState } from "react";
   const NAV_LINKS = [
-  { label: "Home", href: "#" },
+  { label: "Home", href: "/" },
   { label: "Programs", href: "#divisions" },
   { label: "Gallery", href: "#gallery" },
   { label: "Testimonials", href: "#collaborators" },
@@ -21,7 +21,7 @@ export default function Topbar() {
   return (
     <header
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-        scrolled ? "bg-white shadow-sm" : "bg-white/90 backdrop-blur"
+        scrolled ? "bg-white/50 shadow-sm" : "bg-transparent backdrop-blur"
       }`}
     >
       <div className="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between">
