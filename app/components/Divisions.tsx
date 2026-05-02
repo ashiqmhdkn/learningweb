@@ -34,38 +34,38 @@ export default function Divisions() {
     <section id="divisions" className="py-20 px-4 bg-gray-50">
       <div className="max-w-6xl mx-auto">
         <div className="text-center mb-12">
-          <p className="text-emerald-600 font-semibold text-sm tracking-widest uppercase mb-2">Programs</p>
-          <h2 className="text-3xl md:text-4xl font-bold text-gray-900">Academic Divisions</h2>
-          <p className="text-gray-500 mt-3 max-w-xl mx-auto">
+          <p className="text-blue-950 font-semibold text-sm tracking-widest uppercase mb-2">Programs</p>
+          <h2 className="text-3xl md:text-4xl font-bold text-orange-600">Academic Divisions</h2>
+          <p className="text-gray-900 mt-3 max-w-xl mx-auto">
             Comprehensive educational programmes designed for every learning preference.
           </p>
         </div>
- 
+
         <div className="grid md:grid-cols-2 gap-6">
           {DIVISIONS.map((d) => (
             <div
               key={d.tag}
               className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 hover:shadow-md transition-shadow"
             >
-              <span className="inline-block bg-emerald-100 text-emerald-700 text-xs font-semibold px-3 py-1 rounded-full mb-3">
+              <span className="inline-block border border-orange-600 bg-orange-50 text-orange-600 text-xs font-semibold px-3 py-1 rounded-full mb-3">
                 {d.tag}
               </span>
-              <h3 className="text-lg font-bold text-gray-900 mb-2">{d.title}</h3>
-              <p className="text-gray-500 text-sm leading-relaxed mb-4">{d.desc}</p>
- 
+              <h3 className="text-lg font-bold text-blue-950 mb-2">{d.title}</h3>
+              <p className="text-gray-900 text-sm leading-relaxed mb-4">{d.desc}</p>
+
               <div className="flex flex-wrap gap-2 mb-5">
                 {d.badges.map((b) => (
-                  <span key={b} className="bg-gray-100 text-gray-600 text-xs px-2.5 py-1 rounded-full">
+                  <span key={b} className="bg-blue-100 text-gray-600 text-xs px-2.5 py-1 rounded-full">
                     {b}
                   </span>
                 ))}
               </div>
- 
+
               <div className="grid grid-cols-2 gap-3">
                 {d.stats.map((s) => (
-                  <div key={s.l} className="bg-emerald-50 rounded-xl p-3 text-center">
-                    <p className="text-lg font-extrabold text-emerald-700">{s.v}</p>
-                    <p className="text-xs text-gray-500 mt-0.5">{s.l}</p>
+                  <div key={s.l} className="bg-blue-50 rounded-xl p-3 text-center">
+                    <p className="text-lg font-extrabold text-orange-600">{s.v}</p>
+                    <p className="text-xs text-gray-900 mt-0.5">{s.l}</p>
                   </div>
                 ))}
               </div>

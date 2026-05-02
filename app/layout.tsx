@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { Playfair_Display, DM_Sans } from 'next/font/google';
 import './globals.css';
 import { AuthProvider } from '@/api/auth-context';
+import Script from 'next/script';
 
 const playfair = Playfair_Display({
   subsets: ['latin'],
@@ -85,7 +86,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
 
         {/* Static Favicon (Recommended) */}
-    // Replace your current favicon section with this complete implementation
 {/* <link rel="icon" href="/crescent.png" type="image/png" />
 {/* Primary Favicon - Multiple formats for compatibility */}
 {/* <link rel="icon" href="/favicon.ico" sizes="32x32" /> */}
@@ -103,8 +103,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 {/* Microsoft Tile */}
 {/* <meta name="msapplication-TileColor" content="#000000" /> */}
 {/* <meta name="msapplication-config" content="/browserconfig.xml" /> */} 
-<link rel="icon" href="/favicon.ico" />
-        <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+<link rel="icon" href="/logo.png" type="image/png" />
+        <link rel="apple-touch-icon" href="/logo.png" />
 
 
         {/* Font Preload */}
@@ -117,8 +117,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           fetchPriority="high"
         />
 
-        {/* Google Tag Manager */}
-        {/* <Script id="gtm-script" strategy="afterInteractive">
+         <Script id="gtm-script" strategy="afterInteractive">
           {`
             (function(w,d,s,l,i){w[l]=w[l]||[];
               w[l].push({'gtm.start': new Date().getTime(), event:'gtm.js'});
@@ -128,7 +127,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               f.parentNode.insertBefore(j,f);
             })(window,document,'script','dataLayer','GTM-MBJSN67T');
           `}
-        </Script> */}
+        </Script> 
 
       </head>
       <body>
@@ -142,9 +141,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         </noscript>
         
         {/* Skip to main content link for accessibility */}
-        <a href="#main-content" className="sr-only focus:not-sr-only">
-          Skip to main content
-        </a>
+        
 
           <div className="fixed inset-0 z-0 bg-white">
             {/* <Plasma color="#f82" speed={0.8} direction="forward" scale={1.5} opacity={0.5} mouseInteractive={true} /> */}
